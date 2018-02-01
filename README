@@ -1,0 +1,3 @@
+Follow these steps when setup
+1. bash setup.sh
+2. source ~/.profile

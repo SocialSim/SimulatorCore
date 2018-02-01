@@ -14,3 +14,5 @@ class SocialSimModel(Model):
     def createObjects(self):
         pass
 
+    def createBehaviorModel(self):
+        pass

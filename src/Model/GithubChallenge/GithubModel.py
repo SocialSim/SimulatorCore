@@ -28,23 +28,25 @@ class GithubModel(SocialSimModel):
         # data from datacube)
         self.current_time = 0
 
+        self.event_history = []
+
     def step(self):
         self.schedule.step()
-        self.current_time = (self.current_time + 1) % 24
+        self.current_time = self.current_time + 1
 
     def createAgents(self):
-        createGithubAgents()
+        self.createGithubAgents()
 
     def createObjects(self):
-        createGithubObjects()
+        self.createGithubObjects()
 
+    # placeholder for future extension
     def createBehaviorModel(self):
         pass
 
 #####
 
     def createGithubAgents(self):
-
         # ask for a list of user id
         self.agent_id = self.analysis_lib.getListOfAgentID()
         self.num_agents = len(self.agent_id)
@@ -69,7 +71,8 @@ class GithubModel(SocialSimModel):
         # for each obj id, we instantiate a GithubRepository 
         # ask for attributes and initilize them. Put them in a dictionary
         for objId in self.obj_id:
+            break
             # Note: need to ask for other needed attributes and parse them and instantiate them
-            return
+        return
 
 

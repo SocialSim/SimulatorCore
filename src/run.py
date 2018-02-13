@@ -1,13 +1,17 @@
-from Model.GithubChallenge.GithubModel import GithubModel
+from SimulatorCore.SimulatorCore import SimulatorCore
+from AgentBuilder.AgentBuilder import AgentBuilder
+
+def main():
+    agentBuilder = AgentBuilder()
+    agentList = agentBuilder.build()
+
+    simulatorCore = SimulatorCore(agentList = agentList,
+            startTime = 0,
+            endTime = 24 * 10)
+    simulatorCore.simulate()
+    simulatorCore.showLog()
+
 
 if __name__ == "__main__":
-    model = GithubModel()
-    
-    # for time_interval until finish
-    for i in range(24*10):
-        print("Time=%d"%model.current_time)
-        model.step()
-
-    for i in range(len(model.event_history)):
-        print(model.event_history[i])
+    main()
 

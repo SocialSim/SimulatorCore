@@ -1,4 +1,3 @@
-from mesa import Agent
 import random
 
 # Note: right now, all the attrbutes of an agent should be passed from simulator during
@@ -6,17 +5,17 @@ import random
 # contact" to analysis library for future maintanence. The other way to do it
 # is that we only pass in agent_id, and initialize every other attribute as None.
 # Then when github agent needs it, it then queries analysis library itself.
-class SimpleGithubAgent(Agent):
+class Agent():
 
     ''' Init function '''
-    def __init__(self, unique_id, model, ind_prob):
-        super().__init__(unique_id, model)
+    def __init__(self, unique_id, analysis_lib):
         self.id = unique_id
-        self.ind_prob = ind_prob
+        self.analysisLib = analysis_lib
+        self.ind_prob = analysis_lib.getIndendentProbOfAgent(self.id)
+        # query for independent probability
 
     ''' Function to perform for every step'''
-    def step(self):
-        current_time = self.model.current_time
+    def step(self, current_time):
 
         # For each interested repository
         for obj in self.ind_prob.keys():
@@ -26,7 +25,7 @@ class SimpleGithubAgent(Agent):
                 print("UserId=%d, RepoId=%d, ActionType=%s, prob=%.3f"%(self.id, obj, action_type, prob))
                 # Flip a coin and see if I'm going to do any action on it
                 if random.random() <= prob:
-                    self.model.event_history.append([self.id,obj,action_type,current_time])
+                    return [self.id,obj,action_type,current_time]
 			
 
     def parseAttribute(self, attr):

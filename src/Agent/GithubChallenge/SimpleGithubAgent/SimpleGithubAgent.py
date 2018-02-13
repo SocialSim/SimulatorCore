@@ -16,16 +16,18 @@ class Agent():
 
     ''' Function to perform for every step'''
     def step(self, current_time):
+        action_list = list()
 
         # For each interested repository
         for obj in self.ind_prob.keys():
             # For each action type
             for action_type in self.ind_prob[obj]:
                 prob = self.ind_prob[obj][action_type][current_time % 24]
-                print("UserId=%d, RepoId=%d, ActionType=%s, prob=%.3f"%(self.id, obj, action_type, prob))
                 # Flip a coin and see if I'm going to do any action on it
                 if random.random() <= prob:
-                    return [self.id,obj,action_type,current_time]
+                    action_list.append([self.id,obj,action_type,current_time])
+
+        return action_list
 			
 
     def parseAttribute(self, attr):

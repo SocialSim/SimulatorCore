@@ -15,8 +15,8 @@ class SimulatorCore():
 
     def step(self):
         for agent in self.agentList:
-            action = agent.step(self.currentTime)
-            if action is not None:
+            action_list = agent.step(self.currentTime)
+            for action in action_list:
                 self.eventHistory.append(action)
 
         self.currentTime = self.currentTime + 1

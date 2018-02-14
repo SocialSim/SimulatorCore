@@ -7,7 +7,7 @@ from AnalysisLib.AnalysisLib import AnalysisLib
 # run simulation
 def main():
     # load initial agent/object attributes from config file that will be generated from database
-    analysis_lib = AnalysisLib()
+    analysis_lib = AnalysisLib('../config/config.json')
     config = analysis_lib.getAttributes()
 
     agentBuilder = AgentBuilder(config["agents"]["attributes"], analysis_lib)

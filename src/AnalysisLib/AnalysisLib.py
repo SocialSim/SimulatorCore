@@ -1,13 +1,13 @@
 import json
 
-# retrieve dists at getIndependentProofOfAgent through data cube
+# retrieve dists at getIndendentProbOfAgent through data cube
 push_dist = [0,0,0,0,0,0,0,0,0,0.1,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
 star_dist = [0,0,0,0,0,0,0,0,0,0.2,0.1,0.1,0.2,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
 
 class AnalysisLib():
 
-    def __init__(self):
-        self.attributes = self.loadAttributes('../config/config.json')
+    def __init__(self, fname):
+        self.attributes = self.loadAttributes(fname)
 
     # data structure looks like
     # {obj_id1: {"push": [], "pull": []}, obj_id2: {"push": [0.1, 0.2, 0.7], "pull": [0.2, 0.3, 0.9]}}
@@ -17,11 +17,10 @@ class AnalysisLib():
 
         # define temp independent probabilities
         # ind_prob = {id: {0: {"push": push_dist, "star": star_dist}, 1: {"push": push_dist, "star": star_dist}} for id in self.agent_id}
-        ind_prob = {0: {"push": push_dist, "star": star_dist}, 1: {"push": push_dist, "star": star_dist}}
+        ind_prob = {123456: {"push": push_dist, "star": star_dist}, 654321: {"push": push_dist, "star": star_dist}}
 
         # return ind_prob[agentId]
         return ind_prob
-        
     
     def getDependentProbOfAgent(self, agentID):
         pass
@@ -34,6 +33,9 @@ class AnalysisLib():
         for attributes in self.attributes[target_type]["attributes"]:
             id_list.append(attributes["id"])
         return id_list
+
+    def getActions(self):
+        return self.attributes["actions"]["types"]
 
     def loadAttributes(self, fname):
         with open(fname) as data_file:

@@ -17,7 +17,7 @@ class ObjectBuilder():
 
     def createObjects(self):
         # ask for a list of user id
-        self.object_id = self.analysis_lib.getListOfObjID()
+        self.object_id = utils.get_ids("objects")
 
         # for each user id, we instantiate a SimpleGithubAgent
 

@@ -17,7 +17,7 @@ class AgentBuilder():
 
     def createAgents(self):
         # ask for a list of user id
-        self.agent_id = self.analysis_lib.getListOfAgentID()
+        self.agent_id = utils.get_ids("agents")
 
         # for each user id, we instantiate a SimpleGithubAgent
 

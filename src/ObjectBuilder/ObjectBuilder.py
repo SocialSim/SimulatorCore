@@ -1,13 +1,12 @@
 import Object.GithubChallenge.GithubRepository.GithubRepository as objectTemplate
-from AnalysisLib.AnalysisLib import AnalysisLib
 from Object.GithubChallenge.GithubRepository.GithubRepository import GithubRepository
 
 from utils import utils
 
 class ObjectBuilder():
 
-    def __init__(self, attributeList):
-        self.analysis_lib = AnalysisLib()
+    def __init__(self, attributeList, analysisLib):
+        self.analysis_lib = analysisLib
         self.objectList = list()
         self.attributeList = attributeList
 
@@ -17,7 +16,7 @@ class ObjectBuilder():
 
     def createObjects(self):
         # ask for a list of user id
-        self.object_id = utils.get_ids("objects")
+        self.object_id = self.analysis_lib.getIds("objects")
 
         # for each user id, we instantiate a SimpleGithubAgent
 

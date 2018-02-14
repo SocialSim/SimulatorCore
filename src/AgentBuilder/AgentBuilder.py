@@ -1,13 +1,12 @@
 import Agent.GithubChallenge.SimpleGithubAgent.SimpleGithubAgent as agentTemplate
-from AnalysisLib.AnalysisLib import AnalysisLib
 from Object.GithubChallenge.GithubRepository.GithubRepository import GithubRepository
 
 from utils import utils
 
 class AgentBuilder():
 
-    def __init__(self, attributeList):
-        self.analysis_lib = AnalysisLib()
+    def __init__(self, attributeList, analysisLib):
+        self.analysis_lib = analysisLib
         self.agentList = list()
         self.attributeList = attributeList
 
@@ -17,7 +16,7 @@ class AgentBuilder():
 
     def createAgents(self):
         # ask for a list of user id
-        self.agent_id = utils.get_ids("agents")
+        self.agent_id = self.analysis_lib.getIds("agents")
 
         # for each user id, we instantiate a SimpleGithubAgent
 

@@ -17,6 +17,7 @@ class SimulatorCore():
         for agent in self.agentList:
             action_list = agent.step(self.currentTime)
             for action in action_list:
+                # given agent-generated action, update agents and objects based on interaction
                 self.agentList, self.objectList = self.interactionModel.update(action)
                 self.eventHistory.append(action)
 

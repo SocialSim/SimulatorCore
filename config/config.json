@@ -1,0 +1,21 @@
+{
+    "agents":{
+        "attributes": [
+            {"id": 0, "stars": [], "forks": []},
+            {"id": 1, "stars": [], "forks": []},
+            {"id": 2, "stars": [], "forks": []},
+            {"id": 3, "stars": [], "forks": []},
+            {"id": 4, "stars": [], "forks": []},
+            {"id": 5, "stars": [], "forks": []}
+        ]
+    },
+    "objects":{
+        "attributes":[
+            {"id": 0, "stars": [], "forks": []},
+            {"id": 1, "stars": [], "forks": []}
+        ]
+    },
+    "actions":{
+        "types":["push", "star"]
+    }
+}

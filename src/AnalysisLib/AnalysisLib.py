@@ -12,7 +12,7 @@ class AnalysisLib:
         return self.agentIds
     
     def getListOfObjIds(self):
-        return self.objIds
+        return self.objectIds
     
     # data structure looks like
     # {obj_id1: {"push": [], "pull": []}, obj_id2: {"push": [0.1, 0.2, 0.7], "pull": [0.2, 0.3, 0.9]}}

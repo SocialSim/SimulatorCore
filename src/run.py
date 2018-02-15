@@ -10,7 +10,7 @@ def main():
     # Init and config simulation setting
     simulator = TimeBasedSimulator(agents=agents, startTime=0, endTime=24*10, unitTime=1)
     simulator.run()
-    simulation.showLog()
+    simulator.showLog()
 
     # TODO: collect data and analyze
 

@@ -1,4 +1,4 @@
-import Agent.GithubChallenge.SimpleGithubAgent.SimpleGithubAgent as SimpleGithubAgent
+import Agent.GithubChallenge.SimpleGithubAgent as SimpleGithubAgent
 from AnalysisLib.AnalysisLib import AnalysisLib
 
 

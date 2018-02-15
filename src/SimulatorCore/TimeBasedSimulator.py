@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 
-class TimeBasedSimulation():
+class TimeBasedSimulator():
 
     def __init__(self, agents, startTime, endTime, unitTime):
         self.agents = agents

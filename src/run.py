@@ -1,17 +1,20 @@
-from SimulatorCore.SimulatorCore import SimulatorCore
+from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
 from AgentBuilder.AgentBuilder import AgentBuilder
 
+
 def main():
+    # Init and config AgentBuilder
     agentBuilder = AgentBuilder()
-    agentList = agentBuilder.build()
+    agents = agentBuilder.build()
 
-    simulatorCore = SimulatorCore(agentList = agentList,
-            startTime = 0,
-            endTime = 24 * 10)
-    simulatorCore.simulate()
-    simulatorCore.showLog()
+    # Init and config simulation setting
+    simulator = TimeBasedSimulator(agents=agents, startTime=0, endTime=24*10, unitTime=1)
+    simulator.run()
+    simulation.showLog()
 
+    # TODO: collect data and analyze
 
+    
 if __name__ == "__main__":
     main()
 

@@ -3,14 +3,26 @@ from AnalysisLib.AnalysisLib import AnalysisLib
 
 
 class AgentBuilder():
-    '''This class is responsible for building agents from AnalysisLib. For now, each user in the database is modeled by one agent object. In the future, nonactive users, say, those who perform 1 to 3 actions per months, are grouped into a single generic agent object.'''
+    '''
+    This class is responsible for building agent objects from AnalysisLib. For now, each user in the database is modeled by one separate agent object. FUTURE IMPROVEMENT: users with homogenous behaviors are grouped into a single generic agent object. For example, one generic agent object handles all users who perform only 1 to 3 actions per months.
+    '''
 
     def __init__(self, AgentModel=SimpleGithubAgent):
+        '''
+        Initialize the AgentBuilder
+
+        :param AgentModel: the class of agent used to construct agent objects, which is passed down from the main() function.
+        '''
+
         self.AgentModel = AgentModel
 
     
     def build(self):
-        '''Build and return a list of agents for the simulator.'''
+        '''
+        Build a list of agents for the simulator. Each user in the database is modeled by one separate agent object.
+
+        :return: a list of agents
+        '''
         
         # Ask AnalysisLib for a list of agent IDs
         agentIds = AnalysisLib.getListOfAgentIds()
@@ -21,9 +33,10 @@ class AgentBuilder():
             # media might choose different format of ID. mesa framework use integer
             # as unique_id
 
-            # Instantiate new agent object
+            # Instantiate new agent object of class AgentModel
+            # TODO configure agent model like setting top-k influential users + activity
             agent = self.AgentModel.Agent(agentId)
-            # TODO: configure agent model like setting top-k influential users + activity            
+
             agents.append(agent)
 
         return agents

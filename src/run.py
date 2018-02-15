@@ -13,7 +13,7 @@ def main():
     simulator.run()
     simulator.showLog()
 
-    # TODO: collect data and analyze
+    # TODO collect data and analyze
 
     
 if __name__ == "__main__":

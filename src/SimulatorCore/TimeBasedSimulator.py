@@ -5,7 +5,7 @@ import numpy as np
 class TimeBasedSimulator():
 
     def __init__(self, agents, startTime, endTime, unitTime):
-        self.agents = agents
+        self.agents = agents            
         self.currentTime = startTime
         self.startTime = startTime
         self.endTime = endTime
@@ -15,9 +15,10 @@ class TimeBasedSimulator():
         
     def run(self):
         for currentTime in np.arange(self.startTime, self.endTime, self.unitTime):
+            random.shuffle(self.agents)
             for agent in self.agents:
                 events = agent.step(currentTime)
-            self.eventHistory += events
+                self.eventHistory += events
 
             
     def showLog(self):

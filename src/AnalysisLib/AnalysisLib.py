@@ -1,32 +1,39 @@
-test_dist = [0,0,0,0,0,0,0,0,0,0.1,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
+from Dependency.IndependentAction import IndependentAction
 
 
 class AnalysisLib:
-    def __init__(self):
-        # set up connection to analysis library we choose
-        self.agentIds = [0,1,2,3,4]
-        self.objectIds = [0]
-        self.ind_prob = {id:{0:{"push":test_dist}} for id in self.agentIds}
+    agentIds = [0,1,2,3,4]
+    objectIds = [0]
 
-    def getListOfAgentIds(self):
-        return self.agentIds
     
-    def getListOfObjIds(self):
-        return self.objectIds
+    def __init__(self):
+        pass
+
     
-    # data structure looks like
-    # {obj_id1: {"push": [], "pull": []}, obj_id2: {"push": [0.1, 0.2, 0.7], "pull": [0.2, 0.3, 0.9]}}
-    # Note: put assertion because probability should be between 0 and 1
-    def getIndendentProbOfAgent(self, agentId):
-        return self.ind_prob[agentId]
+    @staticmethod
+    def getListOfAgentIds():
+        return AnalysisLib.agentIds
+
+    
+    @staticmethod
+    def getListOfObjIds():
+        return AnalysisLib.objectIds
+    
+
+    @staticmethod
+    def getAgentIndependentActions(agentId):
+        # Hard code for now
+        pullRequestAction = IndependentAction(agentId, "GITHUB_PULL_REQUEST", AnalysisLib.objectIds[0], 0.05)
+        pushAction = IndependentAction(agentId, "GITHUB_PUSH", AnalysisLib.objectIds[0], 0.1)
+        return [pushAction, pullRequestAction]
+
+    
+    @staticmethod
+    def getAgentTimeDependentActions(agentId):
+        return None
         
+
+    @staticmethod
+    def getAgentDependentActions(agentID):
+        return None
     
-    def getDependentProbOfAgent(self, agentID):
-        pass
-    
-    # Discuss with Tarek how do we parse and query attributes
-    def getAttributesOfAgent(self, agentID):
-        pass
-    
-    def getAttributesOfObj(self, objID):
-        pass

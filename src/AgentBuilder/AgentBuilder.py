@@ -4,14 +4,14 @@ from AnalysisLib.AnalysisLib import AnalysisLib
 
 class AgentBuilder():
     '''
-    This class is responsible for building agent objects from AnalysisLib. For now, each user in the database is modeled by one separate agent object. FUTURE IMPROVEMENT: users with homogenous behaviors are grouped into a single generic agent object. For example, one generic agent object handles all users who perform only 1 to 3 actions per months.
+    This class is responsible for building agent objects from AnalysisLib. For now, each user in the database is modeled by one separate agent instance. FUTURE IMPROVEMENT: users with homogenous behaviors are grouped into a single generic agent instance. For example, one generic agent class to handle all users who perform only 1 to 3 actions per months.
     '''
 
     def __init__(self, AgentModel=SimpleGithubAgent):
         '''
         Initialize the AgentBuilder
 
-        :param AgentModel: the class of agent used to construct agent objects, which is passed down from the main() function.
+        :param AgentModel: the desired class of agent to construct agent instances, which is configured from the main() function.
         '''
 
         self.AgentModel = AgentModel
@@ -19,7 +19,7 @@ class AgentBuilder():
     
     def build(self):
         '''
-        Build a list of agents for the simulator. Each user in the database is modeled by one separate agent object.
+        Build a list of agent instances for the simulator. Each user in the database is modeled by one separate agent instance.
 
         :return: a list of agents
         '''

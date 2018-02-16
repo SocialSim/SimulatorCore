@@ -1,12 +1,16 @@
 import random
 from AnalysisLib.AnalysisLib import AnalysisLib
-from BehaviorModel.BernoulliModel import BernoulliModel
+from BehaviorModel.SimpleBehaviorModel import SimpleBehaviorModel
 
 
 class Agent():
     '''
-    A simple Agent model for GitHub users. The users perform independent actions where the rates of actions were computed from the database by the AnalysisLib.
+    A simple Agent model for GitHub users. The user generates actions according to
+    (i) the user's hourly action rate and
+    (ii) the user's preference over the repos she is working on
+    both of which were computed from the database by AnalysisLib.
     '''
+    
     def __init__(self, agentId):
         self.agentId = agentId
 
@@ -15,25 +19,22 @@ class Agent():
 
         
     def __build(self):
-        '''Query AnalysisLib to get a list of IndependentAction objects.'''
-        self.indActions = AnalysisLib.getAgentIndependentActions(self.agentId)
-
+        '''Query AnalysisLib to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
+        self.hourlyActionRates = AnalysisLib.getAgentHourlyActionRate(self.agentId)
+        self.objectPreference = AnalysisLib.getAgentObjectPreference(self.agentId)
+        
         
     def step(self, currentTime):
         '''
         The step() function is used by TimeBasedSimulator. This function is invoked at every time step in the simulation loop.
 
         :param currentTime: current simulation time
-        :return: the list of instantaneous events gererated by the agent at the given time.
+        :return: the list of instantaneous events the agent generates at the given time.
         '''
-        events = []
 
-        for indAction in self.indActions:
-            if BernoulliModel.evaluate(indAction):
-                event = [indAction.agentId, indAction.objectId, indAction.actionType, currentTime]
-                print(event)
-                events.append(event)
-
+        # FIXME what if simulation time DOES NOT advance every one hour
+        events = SimpleBehaviorModel.evaluate(self.hourlyActionRates, self.objectPreference, currentTime)
+        
         return events
 
     

@@ -7,6 +7,10 @@ def main():
     # Init and config AgentBuilder
     agentBuilder = AgentBuilder(AgentModel=SimpleGithubAgent)
     agents = agentBuilder.build()
+
+
+    # TODO init and config Dependency Manager
+
     
     # Init and config simulation setting
     simulator = TimeBasedSimulator(agents=agents, startTime=0, endTime=24, unitTime=1)

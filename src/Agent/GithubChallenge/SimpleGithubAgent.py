@@ -8,7 +8,7 @@ class Agent():
     A simple Agent model for GitHub users. The user generates actions according to
     (i) the user's hourly action rate and
     (ii) the user's preference over the repos she is working on
-    both of which were computed from the database by AnalysisLib.
+    both of which were computed from the database using AnalysisLib.
     '''
     
     def __init__(self, agentId):
@@ -24,7 +24,7 @@ class Agent():
         self.objectPreference = AnalysisLib.getAgentObjectPreference(self.agentId)
         
         
-    def step(self, currentTime):
+    def step(self, currentTime, unitTime):
         '''
         The step() function is used by TimeBasedSimulator. This function is invoked at every time step in the simulation loop.
 
@@ -33,7 +33,7 @@ class Agent():
         '''
 
         # FIXME what if simulation time DOES NOT advance every one hour
-        events = SimpleBehaviorModel.evaluate(self.hourlyActionRates, self.objectPreference, currentTime)
+        events = SimpleBehaviorModel.evaluate(self.hourlyActionRates, self.objectPreference, currentTime, unitTime)
         
         return events
 

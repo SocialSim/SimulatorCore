@@ -9,12 +9,13 @@ class SimpleBehaviorModel():
 
 
     @staticmethod
-    def evaluate(hourlyActionRates, objectPreference, currentTime):
+    def evaluate(hourlyActionRates, objectPreference, currentTime, unitTime):
         '''
         Decide user action performed on object by flipping a coin.
 
         :param hourlyActionRates: list of agent's HourlyActionRate instance, each instance corresponding to one actionType
         :param objectPreference: agent's preference over objects she touches.
+
         :return: a list of events
         '''
 
@@ -27,7 +28,7 @@ class SimpleBehaviorModel():
                 agentId = hourlyActionRate.agentId
                 objectId = rv.rvs(size=1)[0] # Get 1 sample the distribution
                 actionType = hourlyActionRate.actionType
-                event = [agentId, objectId, actionType, currentTime]
+                event = [agentId, objectId, actionType, currentTime, currentTime+unitTime]
                 events.append(event)
 
         return events

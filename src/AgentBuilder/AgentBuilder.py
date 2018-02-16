@@ -1,22 +1,22 @@
 import Agent.GithubChallenge.SimpleGithubAgent.SimpleGithubAgent as agentTemplate
-from Object.GithubChallenge.GithubRepository.GithubRepository import GithubRepository
 
 from utils import utils
 
 class AgentBuilder():
 
-    def __init__(self, attributeList, analysisLib):
-        self.analysis_lib = analysisLib
-        self.agentList = list()
-        self.attributeList = attributeList
+    def __init__(self, attribute_list, analysis_lib, class_type):
+        self.analysis_lib = analysis_lib
+        self.agent_list = list()
+        self.attribute_list = attribute_list
+        self.class_type = class_type
 
     def build(self):
         self.createAgents()
-        return self.agentList
+        return self.agent_list
 
     def createAgents(self):
         # ask for a list of user id
-        self.agent_id = self.analysis_lib.getIds("agents")
+        self.agent_id = self.analysis_lib.getIds(self.class_type)
 
         # for each user id, we instantiate a SimpleGithubAgent
 
@@ -24,6 +24,6 @@ class AgentBuilder():
         # media might choose different format of ID. mesa framework use integer
         # as unique_id
         for agentId in self.agent_id:
-            agent = agentTemplate.Agent(agentId, self.analysis_lib, self.attributeList[utils.get_dict_id_index(agentId, self.attributeList)])
-            self.agentList.append(agent)
+            agent = agentTemplate.Agent(agentId, self.analysis_lib, self.attribute_list[utils.get_dict_id_index(agentId, self.attribute_list)])
+            self.agent_list.append(agent)
 

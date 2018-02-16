@@ -41,7 +41,7 @@ class AnalysisLib():
         return id_list
 
     def getActions(self):
-        return self.attributes["actions"]["types"]
+        return self.attributes["actions"]
 
     def loadAttributes(self, fname):
         with open(fname) as data_file:

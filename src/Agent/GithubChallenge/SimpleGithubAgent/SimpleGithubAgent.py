@@ -24,25 +24,34 @@ class Agent():
         # For each interested repository
         for obj in object_list:
             # For each action type
-            for action_type in action_list:
-                prob = self.analysisLib.getIndendentProbOfAgent(self.id, obj, action_type, current_time % 24)
+            for i in range(len(action_list["action"])):
+                prob = self.analysisLib.getIndendentProbOfAgent(self.id, obj, action_list["action"][i], current_time % 24)
                 # Flip a coin and see if I'm going to do any action on it
                 if random.random() <= prob:
-                    if action_type == "star":
-                        if obj not in self.attributes["stars"]:
-                            self.attributes["stars"].append(obj)
-                            activity_history.append([self.id, obj, action_type, current_time])
+                    # Perform set of actions based on type of action
+                    if action_list["definition"][i] == "singular":
+                        if obj not in self.attributes[action_list["agent_attribute"][i]]:
+                            self.attributes[action_list["agent_attribute"][i]].append({"id": obj, "timestamp": current_time})
+                            activity_history.append([self.id, obj, action_list["action"][i], current_time])
                         else:
                             continue # this is not necessarily true
                     else:
-                        activity_history.append([self.id, obj, action_type, current_time])
+                        self.attributes[action_list["agent_attribute"][i]].append({"id": obj, "timestamp": current_time})
+                        activity_history.append([self.id, obj, action_list["action"][i], current_time])
                     break # the agent should only be able to take one action per time step
 
         return activity_history
 
+    def updateAttributes(self, actorId, action, timestamp):
+        self.attributes[action].append({"id": actorId, "timestamp": timestamp})
+        pass
+
     def parseAttribute(self, attr):
         pass
-        # parse attributes returned by AnalysisLib.getAttributesOfUser()
+        # query simulation table in db to get this agent's target attribute
 
     def returnAttributes(self):
         return self.attributes
+
+    def returnId(self):
+        return self.id

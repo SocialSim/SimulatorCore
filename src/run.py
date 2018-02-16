@@ -1,7 +1,5 @@
 from SimulatorCore.SimulatorCore import SimulatorCore
 from AgentBuilder.AgentBuilder import AgentBuilder
-from ObjectBuilder.ObjectBuilder import ObjectBuilder
-from InteractionModel.GithubInteractionModel import GitHubInteractionModel
 from AnalysisLib.AnalysisLib import AnalysisLib
 
 # run simulation
@@ -10,17 +8,15 @@ def main():
     analysis_lib = AnalysisLib('../config/config.json')
     config = analysis_lib.getAttributes()
 
-    agentBuilder = AgentBuilder(config["agents"]["attributes"], analysis_lib)
+    agentBuilder = AgentBuilder(config["agents"]["attributes"], analysis_lib, "agents")
     agentList = agentBuilder.build()
 
-    objectBuilder = ObjectBuilder(config["objects"]["attributes"], analysis_lib)
+    objectBuilder = AgentBuilder(config["objects"]["attributes"], analysis_lib, "objects")
     objectList = objectBuilder.build()
-
-    interactionModel = GitHubInteractionModel(agentList, objectList)
 
     simulatorCore = SimulatorCore(agentList = agentList,
             objectList = objectList,
-            interactionModel = interactionModel,
+            actions = analysis_lib.getActions(),
             startTime = 0,
             endTime = 24 * 10)
     simulatorCore.simulate()

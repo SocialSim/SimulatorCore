@@ -34,7 +34,6 @@ class TimeBasedSimulator():
             if targetObject.returnId() == action[1]:
                 targetObject.updateAttributes(action[0], self.actions["object_attribute"][self.actions["action"].index(action[2])], action[3])
                 break
-        # include other types of interactions based on action definitions from the config file (later db)  
 
             
     def showLog(self):

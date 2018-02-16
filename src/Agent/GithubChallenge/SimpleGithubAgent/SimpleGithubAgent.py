@@ -29,7 +29,7 @@ class Agent():
         object_list = self.analysisLib.getIds("objects")
         action_list = self.analysisLib.getActions()
 
-        # For each interested repository
+        # Iterate for each interested repository
         for obj in object_list:
             # For each action type
             for i in range(len(action_list["action"])):

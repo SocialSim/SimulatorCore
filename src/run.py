@@ -1,17 +1,38 @@
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
 from AgentBuilder.AgentBuilder import AgentBuilder
-import Agent.GithubChallenge.SimpleGithubAgent as SimpleGithubAgent
+from AnalysisLib.AnalysisLib import AnalysisLib
+from Agent.GithubChallenge.SimpleGithubAgent.SimpleGithubAgent import Agent
+from Object.GithubChallenge.GithubRepository.GithubRepository import Object
 
-
+# run simulation
 def main():
-    # Init and config AgentBuilder
-    agentBuilder = AgentBuilder(AgentModel=SimpleGithubAgent)
-    agents = agentBuilder.build()
-    
-    # Init and config simulation setting
-    simulator = TimeBasedSimulator(agents=agents, startTime=0, endTime=24, unitTime=1)
-    simulator.run()
-    simulator.showLog()
+    # load initial agent/object attributes from config file that will be generated from database
+    analysis_lib = AnalysisLib('../config/config.json')
+    config = analysis_lib.getAttributes()
+
+    agentBuilder = AgentBuilder(
+            AgentModel = Agent, 
+            attribute_list = config["agents"]["attributes"], 
+            analysis_lib = analysis_lib, 
+            class_type = "agents")
+    agentList = agentBuilder.build()
+
+    objectBuilder = AgentBuilder(
+            AgentModel = Object, 
+            attribute_list = config["objects"]["attributes"], 
+            analysis_lib = analysis_lib, 
+            class_type = "objects")
+    objectList = objectBuilder.build()
+
+    simulatorCore = TimeBasedSimulator(
+            agents = agentList,
+            objects = objectList,
+            actions = analysis_lib.getActions(),
+            startTime = 0,
+            endTime = 24 * 10,
+            unitTime = 1)
+    simulatorCore.simulate()
+    simulatorCore.showLog()
 
     # TODO collect data and analyze
 

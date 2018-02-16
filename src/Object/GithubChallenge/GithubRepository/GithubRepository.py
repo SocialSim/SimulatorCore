@@ -1,25 +1,17 @@
-class GithubRepository(object):
+class Object(object):
 
-    def __init__(self):
+    ''' Init function '''
+    def __init__(self, unique_id, analysis_lib, attributes):
+        self.id = unique_id
+        self.analysisLib = analysis_lib
+        self.attributes = attributes
+
+    def returnAttributes(self):
+        return self.attributes
+
+    def returnId(self):
+        return self.id
+
+    def updateAttributes(self, actorId, action, timestamp):
+        self.attributes[action].append({"id": actorId, "timestamp": timestamp})
         pass
-        # initialize any attributes
-        # logs
-        # do we do a register-notification based log or just any log?
-
-    def updateLog(self, log):
-        pass
-        # log should be a Log class type
-
-    def push(self):
-        pass
-
-    def pull(self):
-        pass
-
-    def issue(self):
-        pass
-
-    def issue(self):
-        pass
-
-

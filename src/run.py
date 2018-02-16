@@ -1,8 +1,6 @@
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
 from AgentBuilder.AgentBuilder import AgentBuilder
 from AnalysisLib.AnalysisLib import AnalysisLib
-from Agent.GithubChallenge.SimpleGithubAgent.SimpleGithubAgent import Agent
-from Object.GithubChallenge.GithubRepository.GithubRepository import Object
 
 # run simulation
 def main():
@@ -11,16 +9,14 @@ def main():
     config = analysis_lib.getAttributes()
 
     agentBuilder = AgentBuilder(
-            AgentModel = Agent, 
             attribute_list = config["agents"]["attributes"], 
-            analysis_lib = analysis_lib, 
+            analysis_lib = analysis_lib,
             class_type = "agents")
     agentList = agentBuilder.build()
 
     objectBuilder = AgentBuilder(
-            AgentModel = Object, 
             attribute_list = config["objects"]["attributes"], 
-            analysis_lib = analysis_lib, 
+            analysis_lib = analysis_lib,
             class_type = "objects")
     objectList = objectBuilder.build()
 

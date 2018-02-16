@@ -1,5 +1,6 @@
 from Dependency.IndependentAction import IndependentAction
 import json
+from collections import OrderedDict
 # retrieve dists at getIndendentProbOfAgent through data cube
 push_dist = [0,0,0,0,0,0,0,0,0,0.1,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
 star_dist = [0,0,0,0,0,0,0,0,0,0.2,0.1,0.1,0.2,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
@@ -35,7 +36,7 @@ class AnalysisLib:
 
     def loadAttributes(self, fname):
         with open(fname) as data_file:
-            data = json.load(data_file)
+            data = json.load(data_file, object_pairs_hook=OrderedDict)
         return data
     
     @staticmethod

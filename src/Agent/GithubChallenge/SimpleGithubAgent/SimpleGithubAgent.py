@@ -1,5 +1,6 @@
 import random
 from BehaviorModel.BernoulliModel import BernoulliModel
+from utils import utils
 
 class Agent():
     '''
@@ -37,7 +38,7 @@ class Agent():
                 if BernoulliModel.evaluate(indProb):
                     # Perform set of actions based on type of action
                     if action_list["definition"][i] == "singular":
-                        if obj not in self.attributes[action_list["agent_attribute"][i]]:
+                        if utils.get_dict_id_index(obj, self.attributes[action_list["agent_attribute"][i]]) == -1:
                             self.attributes[action_list["agent_attribute"][i]].append({"id": obj, "timestamp": current_time})
                             activity_history.append([self.id, obj, action_list["action"][i], current_time])
                         else:

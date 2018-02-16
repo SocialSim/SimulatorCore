@@ -1,4 +1,5 @@
 from AnalysisLib.AnalysisLib import AnalysisLib
+from Agent.GithubChallenge.SimpleGithubAgent.SimpleGithubAgent import Agent
 from utils import utils
 
 class AgentBuilder():
@@ -6,7 +7,7 @@ class AgentBuilder():
     This class is responsible for building agent objects from AnalysisLib. For now, each user in the database is modeled by one separate agent object. FUTURE IMPROVEMENT: users with homogenous behaviors are grouped into a single generic agent object. For example, one generic agent object handles all users who perform only 1 to 3 actions per months.
     '''
 
-    def __init__(self, AgentModel=None, attribute_list = None, analysis_lib = None, class_type = None):
+    def __init__(self, attribute_list = None, analysis_lib = None, class_type = None):
         '''
         Initialize the AgentBuilder
 
@@ -16,7 +17,7 @@ class AgentBuilder():
         self.agent_list = list()
         self.attribute_list = attribute_list
         self.class_type = class_type
-        self.AgentModel = AgentModel
+        self.AgentModel = Agent
 
     
     def build(self):

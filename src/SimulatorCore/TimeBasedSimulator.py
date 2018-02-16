@@ -1,6 +1,6 @@
 import random
 import numpy as np
-
+import json
 
 class TimeBasedSimulator():
 
@@ -44,8 +44,10 @@ class TimeBasedSimulator():
 
         # show log of object attributes
         for i in range(len(self.objects)):
-            print(self.objects[i].returnAttributes())
+            attributes = self.objects[i].returnAttributes()
+            print(json.dumps(attributes, indent=1))
 
         # show log of agent attributes
         for i in range(len(self.agents)):
-            print(self.agents[i].returnAttributes())
+            attributes = self.agents[i].returnAttributes()
+            print(json.dumps(attributes, indent=1))

@@ -35,9 +35,9 @@ class pattern_cube:
             else:
                 return "a3"
         else: # if "object
-            if attributes["language"] == "JavaScript":
+            if attributes["language"] == "Python":
                 return "r1"
-            else: # if "Python"
+            else: # if "JavaScript"
                 return "r2"
 
     # Roll-up or drill-down on given axis

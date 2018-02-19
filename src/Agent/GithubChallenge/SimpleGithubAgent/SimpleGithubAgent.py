@@ -30,6 +30,10 @@ class Agent():
         action_list = self.analysisLib.getActions()
 
         # Iterate for each interested repository
+
+        # NOTE: I need to rewrite this so that this iterates through actions first (not objects) ...
+        # ... For each action we check the probability an agent will act on an object ...
+        # ... That will be the objId I use.
         for obj in object_list:
             # For each action type
             for i in range(len(action_list["action"])):
@@ -37,7 +41,7 @@ class Agent():
                 # Flip a coin and see if I'm going to do any action on it
                 if BernoulliModel.evaluate(indProb):
                     # Perform set of actions based on type of action
-                    if action_list["definition"][i] == "singular":
+                    if action_list["definition"][i] == "aoo_singular":
                         if utils.get_dict_id_index(obj, self.attributes[action_list["agent_attribute"][i]]) == -1:
                             self.attributes[action_list["agent_attribute"][i]].append({"id": obj, "timestamp": current_time})
                             activity_history.append([self.id, obj, action_list["action"][i], current_time])

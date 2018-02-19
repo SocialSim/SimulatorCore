@@ -1,24 +1,24 @@
 {
     "agents":{
         "attributes": [
-            {"id": 342342, "pushes": [], "stars": [], "forks": []},
-            {"id": 657423, "pushes": [], "stars": [], "forks": []},
-            {"id": 829305, "pushes": [], "stars": [], "forks": []},
-            {"id": 293847, "pushes": [], "stars": [], "forks": []},
-            {"id": 693823, "pushes": [], "stars": [], "forks": []},
-            {"id": 433928, "pushes": [], "stars": [], "forks": []}
+            {"id": 342342, "pushes": [], "stars": [], "forks": [], "followers": 500},
+            {"id": 657423, "pushes": [], "stars": [], "forks": [], "followers": 28},
+            {"id": 829305, "pushes": [], "stars": [], "forks": [], "followers": 42},
+            {"id": 293847, "pushes": [], "stars": [], "forks": [], "followers": 0},
+            {"id": 693823, "pushes": [], "stars": [], "forks": [], "followers": 1},
+            {"id": 433928, "pushes": [], "stars": [], "forks": [], "followers": 0}
         ]
     },
     "objects":{
         "attributes":[
-            {"id": 123, "commits": [], "stars": [], "forks": []},
-            {"id": 321, "commits": [], "stars": [], "forks": []}
+            {"id": 123, "commits": [], "stars": [], "forks": [], "language": "JavaScript"},
+            {"id": 321, "commits": [], "stars": [], "forks": [], "language": "Python"}
         ]
     },
     "actions":{
         "action": ["push", "star", "fork"],
         "agent_attribute": ["pushes", "stars", "forks"],
         "object_attribute": ["commits", "stars", "forks"],
-        "definition": ["multiple", "singular", "generative"]
+        "definition": ["aoo_multiple", "aoo_singular", "generative"]
     }
 }

@@ -1,26 +1,34 @@
 from Dependency.IndependentAction import IndependentAction
-import json
+from utils import utils
 from collections import OrderedDict
-# retrieve dists at getIndendentProbOfAgent through data cube
-push_dist = [0,0,0,0,0,0,0,0,0,0.1,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
-star_dist = [0,0,0,0,0,0,0,0,0,0.2,0.1,0.1,0.2,0.1,0.1,0.1,0.1,0.0,0.0,0,0,0,0,0]
+from AnalysisTools import PatternCube
+
+import json
 
 class AnalysisLib:
 
     def __init__(self, fname):
+        # load initial agent attributes
         self.attributes = self.loadAttributes(fname)
+
+        # load data cube
+        self.cube = PatternCube.pattern_cube()
     
     # Note: put assertion because probability should be between 0 and 1
     def getIndendentProbOfAgent(self, agentId, objId, actionType, timeStep):
         # here is where you can access the data cube to return specific probabilities
-        # pattern cube probabilities require agentId, objId, actionType, and timeStep
+
+        # get probability distribution from data cube
+        agent_attributes = self.attributes["agents"]["attributes"][utils.get_dict_id_index(agentId, self.attributes["agents"]["attributes"])]
+        object_attributes = self.attributes["objects"]["attributes"][utils.get_dict_id_index(objId, self.attributes["objects"]["attributes"])]
+        dist = self.cube.get_independent_probability(agent_attributes, object_attributes, actionType)
 
         if actionType == "push":
-            return IndependentAction(agentId, actionType, objId, push_dist[timeStep])
+            return IndependentAction(agentId, actionType, objId, dist[timeStep])
         elif actionType == "star":
-            return IndependentAction(agentId, actionType, objId, star_dist[timeStep])
+            return IndependentAction(agentId, actionType, objId, dist[timeStep])
         else:
-            return IndependentAction(agentId, actionType, objId, push_dist[timeStep])
+            return IndependentAction(agentId, actionType, objId, dist[timeStep])
 
     def getAttributes(self): # return config data
         return self.attributes

@@ -19,7 +19,4 @@ class GithubRepository(object):
     def issue(self):
         pass
 
-    def issue(self):
-        pass
-
 

@@ -15,6 +15,12 @@ The following diagram shows a high level architecture of the framework.
 * __Analysis Library__: responsible for analyzing dataset and build initial statistics and probability.
 
 #### Setup
+This project relies on pylint to do pre-commit lint checking. We also use format.sh within script folder to automatically format our code. Please install following packages before you get started with development:
+```
+$ sudo apt install pylint
+$ sudo pip install yapf
+```
+
 Follow these steps when setup in Debian based OS:
 ```
 $ bash setup.sh

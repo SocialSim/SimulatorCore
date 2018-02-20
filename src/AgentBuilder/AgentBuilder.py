@@ -10,22 +10,21 @@ class AgentBuilder():
         '''
         :param AgentModel: the desired class of agent to construct agent instances, which is configured from the main() function.
         '''
-        
+
         self.AgentModel = AgentModel
 
-    
     def build(self):
         '''
         Build a list of agent instances for the simulator. Each user in the database is modeled by one separate agent instance.
 
         :return: a list of agents
         '''
-        
+
         # Ask AnalysisLib for a list of agent IDs
         analysislib = AnalysisLib.getInstance()
         agentIds = analysislib.getListOfAgentIds()
         agents = []
-        
+
         for agentId in agentIds:
             # Note: for now we assume agentID is integer. However, different social
             # media might choose different format of ID. mesa framework use integer
@@ -38,4 +37,3 @@ class AgentBuilder():
             agents.append(agent)
 
         return agents
-

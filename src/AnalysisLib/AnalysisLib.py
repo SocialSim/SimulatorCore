@@ -3,6 +3,7 @@ from Dependency.HourlyActionRate import HourlyActionRate
 from common.const import *
 import numpy as np
 
+
 class AnalysisLib:
     _instance = None
 
@@ -12,7 +13,6 @@ class AnalysisLib:
         if AnalysisLib._instance is None:
             AnalysisLib()
         return AnalysisLib._instance
-
 
     def __init__(self):
         if AnalysisLib._instance is not None:
@@ -35,12 +35,12 @@ class AnalysisLib:
                     #Event format: (eventTime,objectId,actorId)
                     event = line.split(",")
                     eventTime = int(event[0])
-                    hour = (eventTime/3600)%24
+                    hour = (eventTime / 3600) % 24
                     objectId = int(event[1])
                     agentId = int(event[2])
 
                     #Update the agentsIds and his records
-                    if agentId not in self.agentIds: #This is a new user.
+                    if agentId not in self.agentIds:  #This is a new user.
                         self.agentIds.append(agentId)
                         self.agentActionCount[agentId] = 1
 
@@ -52,10 +52,11 @@ class AnalysisLib:
                         #Update the agentObjectPreference
                         objectPreference = {objectId: 1.0}
                         self.agentObjectPreference[agentId] = objectPreference
-                    else: #Not a new user.
+                    else:  #Not a new user.
                         self.agentActionCount[agentId] += 1
                         self.agentHourlyActionRate[agentId][hour] += 1
-                        if objectId not in self.agentObjectPreference[agentId]: #Did not touch this object before
+                        if objectId not in self.agentObjectPreference[
+                                agentId]:  #Did not touch this object before
                             self.agentObjectPreference[agentId][objectId] = 1.0
                         else:
                             self.agentObjectPreference[agentId][objectId] += 1
@@ -72,9 +73,11 @@ class AnalysisLib:
 
         #Update the agentHourActionRate and agentObjectPreference
         for agentId in self.agentIds:
-            self.agentHourlyActionRate[agentId] /= self.agentActionCount[agentId]
+            self.agentHourlyActionRate[agentId] /= self.agentActionCount[
+                agentId]
             for objectId in self.agentObjectPreference[agentId]:
-                self.agentObjectPreference[agentId][objectId] /= self.agentActionCount[agentId]
+                self.agentObjectPreference[agentId][
+                    objectId] /= self.agentActionCount[agentId]
 
         #Update the generalObjectPreference and generalHourlyActionRate
         totalActions = sum(self.agentActionCount.values())
@@ -82,56 +85,47 @@ class AnalysisLib:
         for objectId in self.generalObjectPreference:
             self.generalObjectPreference[objectId] /= totalActions
 
-    
     def getListOfAgentIds(self):
         return self.agentIds
 
-    
     def getListOfObjIds(self):
         return self.objectIds
-    
 
     def getAgentIndependentActions(self, agentId):
         return None
-    
-    
+
     def getAgentHourlyActionRate(self, agentId):
         '''
         :return: a list of HourlyActionRate instances, one for each actionType 
         '''
         if agentId in self.agentIds:
-            pullRequestAction = HourlyActionRate(agentId,
-                                                 "GITHUB_PULL_REQUEST",
-                                                 self.agentHourlyActionRate[agentId])
-            pushAction = HourlyActionRate(agentId,
-                                          "GITHUB_PUSH",
+            pullRequestAction = HourlyActionRate(
+                agentId, "GITHUB_PULL_REQUEST",
+                self.agentHourlyActionRate[agentId])
+            pushAction = HourlyActionRate(agentId, "GITHUB_PUSH",
                                           self.agentHourlyActionRate[agentId])
-        else: #This is a new user, no record.
-            pullRequestAction = HourlyActionRate(agentId,
-                                                 "GITHUB_PULL_REQUEST",
+        else:  #This is a new user, no record.
+            pullRequestAction = HourlyActionRate(agentId, "GITHUB_PULL_REQUEST",
                                                  self.generalHourlyActionRate)
-            pushAction = HourlyActionRate(agentId,
-                                          "GITHUB_PUSH",
+            pushAction = HourlyActionRate(agentId, "GITHUB_PUSH",
                                           self.generalHourlyActionRate)
 
         return [pushAction, pullRequestAction]
-        
 
     def getAgentObjectPreference(self, agentId):
         '''
         :return: an ObjectPreference instance
         '''
         if agentId in self.agentIds:
-            objectPreference = ObjectPreference(agentId,
-                                                self.agentObjectPreference[agentId].keys(),
-                                                self.agentObjectPreference[agentId].values())
-        else: #This is a new user, no record.
-            objectPreference = ObjectPreference(agentId,
-                                                self.generalObjectPreference.keys(),
-                                                self.generalObjectPreference.values())
+            objectPreference = ObjectPreference(
+                agentId, self.agentObjectPreference[agentId].keys(),
+                self.agentObjectPreference[agentId].values())
+        else:  #This is a new user, no record.
+            objectPreference = ObjectPreference(
+                agentId, self.generalObjectPreference.keys(),
+                self.generalObjectPreference.values())
         return objectPreference
-    
-        
+
     def getAgentDependentActions(self, agentID):
         return None
 

@@ -7,7 +7,6 @@ class BernoulliModel():
     def __init__(self):
         pass
 
-
     @staticmethod
     def evaluate(indAction):
         '''
@@ -16,5 +15,5 @@ class BernoulliModel():
         :param indAction: agent's indepedent action
         :return: a Boolean variable, True if the action is performed and False otherwise.
         '''
-        
+
         return random.random() <= indAction.prob

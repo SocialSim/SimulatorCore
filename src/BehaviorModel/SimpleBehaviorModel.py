@@ -7,7 +7,6 @@ class SimpleBehaviorModel():
     def __init__(self):
         pass
 
-
     @staticmethod
     def evaluate(hourlyActionRates, objectPreference, currentTime, unitTime):
         '''
@@ -20,15 +19,19 @@ class SimpleBehaviorModel():
         '''
 
         events = []
-        rv = rv_discrete(values=(objectPreference.objectIds, objectPreference.probs))
-        
-        for hourlyActionRate in hourlyActionRates: #Consider each type of actions independently
+        rv = rv_discrete(
+            values=(objectPreference.objectIds, objectPreference.probs))
+
+        for hourlyActionRate in hourlyActionRates:  #Consider each type of actions independently
             prob = hourlyActionRate.probs[currentTime % 24]
-            if random.random() <= prob: #He will adopt an action of this type
+            if random.random() <= prob:  #He will adopt an action of this type
                 agentId = hourlyActionRate.agentId
-                objectId = rv.rvs(size=1)[0] # Get 1 sample the distribution
+                objectId = rv.rvs(size=1)[0]  # Get 1 sample the distribution
                 actionType = hourlyActionRate.actionType
-                event = [agentId, objectId, actionType, currentTime, currentTime+unitTime]
+                event = [
+                    agentId, objectId, actionType, currentTime,
+                    currentTime + unitTime
+                ]
                 events.append(event)
 
         return events

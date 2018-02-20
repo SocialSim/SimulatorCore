@@ -8,18 +8,16 @@ def main():
     agentBuilder = AgentBuilder(AgentModel=SimpleGithubAgent)
     agents = agentBuilder.build()
 
-
     # TODO init and config Dependency Manager
 
-    
     # Init and config simulation setting
-    simulator = TimeBasedSimulator(agents=agents, startTime=0, endTime=24, unitTime=1)
+    simulator = TimeBasedSimulator(
+        agents=agents, startTime=0, endTime=24, unitTime=1)
     simulator.run()
     simulator.showLog()
 
     # TODO collect data and analyze
 
-    
+
 if __name__ == "__main__":
     main()
-

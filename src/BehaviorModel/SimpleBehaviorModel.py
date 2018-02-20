@@ -22,9 +22,9 @@ class SimpleBehaviorModel():
         events = []
         rv = rv_discrete(values=(objectPreference.objectIds, objectPreference.probs))
         
-        for hourlyActionRate in hourlyActionRates:
+        for hourlyActionRate in hourlyActionRates: #Consider each type of actions independently
             prob = hourlyActionRate.probs[currentTime % 24]
-            if random.random() <= prob:
+            if random.random() <= prob: #He will adopt an action of this type
                 agentId = hourlyActionRate.agentId
                 objectId = rv.rvs(size=1)[0] # Get 1 sample the distribution
                 actionType = hourlyActionRate.actionType

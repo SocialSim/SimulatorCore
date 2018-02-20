@@ -22,7 +22,8 @@ class AgentBuilder():
         '''
         
         # Ask AnalysisLib for a list of agent IDs
-        agentIds = AnalysisLib.getListOfAgentIds()
+        analysislib = AnalysisLib.getInstance()
+        agentIds = analysislib.getListOfAgentIds()
         agents = []
         
         for agentId in agentIds:

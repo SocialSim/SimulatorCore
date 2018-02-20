@@ -20,8 +20,9 @@ class Agent():
         
     def __build(self):
         '''Query AnalysisLib to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
-        self.hourlyActionRates = AnalysisLib.getAgentHourlyActionRate(self.agentId)
-        self.objectPreference = AnalysisLib.getAgentObjectPreference(self.agentId)
+        analysislib = AnalysisLib.getInstance()
+        self.hourlyActionRates = analysislib.getAgentHourlyActionRate(self.agentId)
+        self.objectPreference = analysislib.getAgentObjectPreference(self.agentId)
         
         
     def step(self, currentTime, unitTime):

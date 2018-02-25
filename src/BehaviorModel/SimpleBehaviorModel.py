@@ -19,6 +19,7 @@ class SimpleBehaviorModel():
         '''
 
         events = []
+        
         rv = rv_discrete(
             values=(objectPreference.objectIds, objectPreference.probs))
 

@@ -1,3 +1,8 @@
 import os
 SOCIALSIMPATH = os.environ['SOCIALSIMPATH']
 DATAPATH = SOCIALSIMPATH + "/data"
+
+# constant for DependencyLogger
+DEPENDENCY_USER = 0
+DEPENDENCY_EVENT = 1
+DEPENDENCY_TIMESTAMP = 2

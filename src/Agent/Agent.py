@@ -1,4 +1,4 @@
-class Agent:
+class Agent(object):
     '''An abstract class for user and object agent models.'''
 
     def __init__(self, id):

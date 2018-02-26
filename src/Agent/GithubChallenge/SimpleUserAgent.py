@@ -14,7 +14,7 @@ class SimpleUserAgent(Agent):
     '''
 
     def __init__(self, id):
-        super().__init__(id)
+        super(SimpleUserAgent, self).__init__(id)
 
         # Populate agent attribute with data
         self.build()

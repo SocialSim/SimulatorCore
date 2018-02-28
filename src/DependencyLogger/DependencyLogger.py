@@ -1,6 +1,6 @@
 from common.const import *
 
-class DependencyLogger(object):
+class DependencyLogger:
     ''' DependencyLogger keeps track of past events of some user Agents.
 
     This module is an alias to DependencyManager. Its functionality is to
@@ -24,6 +24,14 @@ class DependencyLogger(object):
         by a particular agent at that timestamp
 
     '''
+    _instance = None
+
+    @staticmethod
+    def getInstance(logDepth = 10, startTime = 0, unitTime = 1):
+        """ Static access method. """
+        if DependencyLogger._instance is None:
+            DependencyLogger(logDepth, startTime, unitTime)
+        return DependencyLogger._instance
 
     def __init__(self, logDepth = 10, startTime = 0, unitTime = 1):
         ''' initialize DependencyLogger with its logDepth and startTime
@@ -38,6 +46,11 @@ class DependencyLogger(object):
             startTime(int): parameter to intialize startTime
 
         '''
+        if DependencyLogger._instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            DependencyLogger._instance = self
+
         self.logDepth = logDepth
         self.currTime = startTime - 1
         self.unitTime = unitTime

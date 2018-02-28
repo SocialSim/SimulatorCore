@@ -33,6 +33,7 @@ class AnalysisLib:
         self.userDependencies = {}
         self.generalObjectPreference = {}
         self.generalHourlyActionRate = np.array([0.0 for i in range(24)])
+
         with open(DATAPATH + "/test.txt", "r") as file:
             for line in file:
                 if not line:
@@ -198,12 +199,11 @@ class AnalysisLib:
         '''
         if userId in self.userIds:
             userDependency = UserDependency(
-                userId, list(self.userDependencies[userId].keys()),
-                list(self.userDependencies[userId].values())
+                userId, self.userDependencies[userId]
             )
         else:
             userDependency = UserDependency(
-                userId, [], [])
+                userId, dict())
         return userDependency
 
     def getUserDependentActions(self, userID):
@@ -213,4 +213,4 @@ class AnalysisLib:
 if __name__ == '__main__':
     analysislib = AnalysisLib()
     for userId in analysislib.userIds:
-        print(analysislib.userDependencies[userId])
+        print(analysislib.getUserDependency(userId).depUserIds)

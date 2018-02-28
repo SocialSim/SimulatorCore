@@ -20,7 +20,7 @@ class TimeBasedSimulator():
         self.unitTime = unitTime
         self.eventHistory = []
 
-        self.dependencyLogger = DependencyLogger(10, self.startTime, self.unitTime)
+        self.dependencyLogger = DependencyLogger.getInstance(100, self.startTime, self.unitTime)
 
     def run(self):
         for currentTime in np.arange(self.startTime, self.endTime,
@@ -33,6 +33,12 @@ class TimeBasedSimulator():
 
         for agent in self.userAgents:
             events = agent.step(currentTime, self.unitTime)
+            #Log the simulated events
+            for event in events:
+                userId = event[0]
+                eventType = event[2]
+                timestamp = event[3]
+                self.dependencyLogger.logUserEventAtTime(userId, eventType, timestamp)
             self.eventHistory += events
 
     def showLog(self):

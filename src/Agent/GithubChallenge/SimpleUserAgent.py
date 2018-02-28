@@ -2,8 +2,6 @@ import random
 
 from AnalysisLib.AnalysisLib import AnalysisLib
 from BehaviorModel.SimpleBehaviorModel import SimpleBehaviorModel
-from BehaviorModel.DependentBehaviorModel import DependentBehaviorModel
-from DependencyLogger.DependencyLogger import  DependencyLogger
 from Agent.Agent import Agent
 
 
@@ -29,8 +27,6 @@ class SimpleUserAgent(Agent):
             self.id)
         self.objectPreference = analysislib.getUserObjectPreference(
             self.id)
-        self.userDependency = analysislib.getUserDependency(
-            self.id)
 
     def step(self, currentTime, unitTime):
         '''
@@ -41,18 +37,10 @@ class SimpleUserAgent(Agent):
         '''
 
         # FIXME what if simulation time DOES NOT advance every one hour
-        independentEvents = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
+        events = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
                                               self.objectPreference,
                                               currentTime, unitTime)
-        dependentEvents = DependentBehaviorModel.evaluate(self.userDependency,
-                                                          3, #FIXME where to get the length of the dependency window
-                                                          self.objectPreference,
-                                                         currentTime, unitTime)
-        if dependentEvents:
-            print("dependent events for user: %d"%self.id, "time: %d"%currentTime)
-            for event in dependentEvents:
-                print(event)
-        events = independentEvents + dependentEvents
+
         return events
 
     def next(self, currentTime):

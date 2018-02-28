@@ -1,12 +1,13 @@
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
 from AgentBuilder.AgentBuilder import AgentBuilder
 from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
+from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
 
 
 def main():
     # Init and config AgentBuilder
-    agentBuilder = AgentBuilder(UserAgentModel=SimpleUserAgent,
+    agentBuilder = AgentBuilder(UserAgentModel=DependentUserAgent,
                                 ObjectAgentModel=SimpleObjectAgent)
     userAgents, objectAgents = agentBuilder.build()
 

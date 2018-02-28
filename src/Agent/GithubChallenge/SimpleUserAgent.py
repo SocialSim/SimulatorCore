@@ -2,6 +2,7 @@ import random
 
 from AnalysisLib.AnalysisLib import AnalysisLib
 from BehaviorModel.SimpleBehaviorModel import SimpleBehaviorModel
+from BehaviorModel.DependentBehaviorModel import DependentBehaviorModel
 from Agent.Agent import Agent
 
 
@@ -27,6 +28,8 @@ class SimpleUserAgent(Agent):
             self.id)
         self.objectPreference = analysislib.getUserObjectPreference(
             self.id)
+        self.userDependency = analysislib.getUserDependency(
+            self.id)
 
     def step(self, currentTime, unitTime):
         '''
@@ -37,10 +40,12 @@ class SimpleUserAgent(Agent):
         '''
 
         # FIXME what if simulation time DOES NOT advance every one hour
-        events = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
+        independentEvents = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
                                               self.objectPreference,
                                               currentTime, unitTime)
-
+        dependentEvents = DependentBehaviorModel.evaluate(self.userDependency,
+                                                         currentTime, unitTime)
+        events = independentEvents.extend(dependentEvents)
         return events
 
     def next(self, currentTime):

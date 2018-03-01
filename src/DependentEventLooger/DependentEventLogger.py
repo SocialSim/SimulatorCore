@@ -1,6 +1,6 @@
 from common.const import *
 
-class DependencyLogger(object):
+class DependentEventLogger(object):
     ''' DependencyLogger keeps track of past events of some user Agents.
 
     This module is an alias to DependencyManager. Its functionality is to

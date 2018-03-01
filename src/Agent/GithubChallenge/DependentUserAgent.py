@@ -49,10 +49,7 @@ class DependentUserAgent(SimpleUserAgent):
                                                           3,  # FIXME where to get the length of the dependency window
                                                           self.objectPreference,
                                                           currentTime, unitTime)
-        if dependentEvents:
-            print("dependent events for user: %d" % self.id, "time: %d" % currentTime)
-            for event in dependentEvents:
-                print(event)
+
         events = independentEvents + dependentEvents
         return events
 

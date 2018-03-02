@@ -46,10 +46,9 @@ class DependentUserAgent(SimpleUserAgent):
                                                          self.objectPreference,
                                                          currentTime, unitTime)
         dependentEvents = DependentBehaviorModel.evaluate(self.userDependency,
-                                                          3,  # FIXME where to get the length of the dependency window
+                                                          1,  # Same as the dependency length as in Analysislib
                                                           self.objectPreference,
                                                           currentTime, unitTime)
-
         events = independentEvents + dependentEvents
         return events
 

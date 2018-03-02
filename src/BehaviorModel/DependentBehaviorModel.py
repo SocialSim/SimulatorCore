@@ -37,12 +37,14 @@ class DependentBehaviorModel():
         for depUserId in userDependency.depUserIds:  # Consider each pairwise dependency independently
             prob = userDependency.userDependency[depUserId]
             dependentEventFlag = {"GITHUB_PULL_REQUEST": False, "GITHUB_PUSH": False}
+            #First check if the dependent user performed action during the dpendency window.
             for timestamp in np.arange(currentTime - dependencyLength, currentTime, unitTime):
                 if timestamp < 0:
                     continue
                 for eventType in DependentBehaviorModel.eventTypes:
                     if dependencyLogger.checkUserEventAtTime(depUserId, eventType, timestamp):
                         dependentEventFlag[eventType] = True
+            #This user will perform a same-type action as his dependent user based on his object preference
             for eventType in DependentBehaviorModel.eventTypes:
                 if dependentEventFlag[eventType]:
                     if random.random() <= prob:  # He will adopt an action of this type

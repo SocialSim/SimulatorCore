@@ -37,8 +37,8 @@ class TimeBasedSimulator():
             for event in events:
                 userId = event[0]
                 eventType = event[2]
-                timestamp = event[3]
-                self.dependencyLogger.logUserEventAtTime(userId, eventType, timestamp)
+                timeStamp = event[3]
+                self.dependencyLogger.logUserEventAtTime(userId, eventType, timeStamp)
             self.eventHistory += events
 
     def showLog(self):

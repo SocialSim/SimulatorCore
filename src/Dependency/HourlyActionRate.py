@@ -3,12 +3,13 @@ class HourlyActionRate():
     A simple data structure to hold an agent's action rate each hour of a day. This time-dependent action is independent of other agents' actions.
     '''
 
-    def __init__(self, agentId, actionType, probs):
+    def __init__(self, agentId, activityLevel, actionType, probs):
         '''
         :param probs: array of time-dependent rate of action. Example: the probability of agent <agentId> generating action <actionType> on some object at 8am is probs[7].
         '''
 
         self.agentId = agentId
+        self.activityLevel = activityLevel
         self.actionType = actionType
         self.probs = probs
 

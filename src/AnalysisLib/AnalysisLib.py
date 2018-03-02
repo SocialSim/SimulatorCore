@@ -1,56 +1,134 @@
-from Dependency.IndependentAction import IndependentAction
-from utils import utils
-from collections import OrderedDict
-from AnalysisTools import PatternCube
+from common.const import *
+import numpy as np
+import time
 
-import json
+from Dependency.ObjectPreference import ObjectPreference
+from Dependency.HourlyActionRate import HourlyActionRate
+
+from Database.DatabaseInterface import DatabaseInterface
+
 
 class AnalysisLib:
+    _instance = None
 
-    def __init__(self, fname):
-        # load initial agent attributes
-        self.attributes = self.loadAttributes(fname)
+    @staticmethod
+    def getInstance():
+        """ Static access method. """
+        if AnalysisLib._instance is None:
+            AnalysisLib()
+        return AnalysisLib._instance
 
-        # load data cube
-        self.cube = PatternCube.pattern_cube()
-    
-    # Note: put assertion because probability should be between 0 and 1
-    def getIndendentProbOfAgent(self, agentId, objId, actionType, timeStep):
-        # here is where you can access the data cube to return specific probabilities
-
-        # get probability distribution from data cube
-        agent_attributes = self.attributes["agents"]["attributes"][utils.get_dict_id_index(agentId, self.attributes["agents"]["attributes"])]
-        object_attributes = self.attributes["objects"]["attributes"][utils.get_dict_id_index(objId, self.attributes["objects"]["attributes"])]
-        dist = self.cube.get_independent_probability(agent_attributes, object_attributes, actionType)
-
-        if actionType == "push":
-            return IndependentAction(agentId, actionType, objId, dist[timeStep])
-        elif actionType == "star":
-            return IndependentAction(agentId, actionType, objId, dist[timeStep])
+    def __init__(self):
+        if AnalysisLib._instance is not None:
+            raise Exception("This class is a singleton!")
         else:
-            return IndependentAction(agentId, actionType, objId, dist[timeStep])
+            AnalysisLib._instance = self
 
-    def getAttributes(self): # return config data
-        return self.attributes
-
-    def getIds(self, target_type): # return list of ids of target type from config data
-        id_list = []
-        for attributes in self.attributes[target_type]["attributes"]:
-            id_list.append(attributes["id"])
-        return id_list
-
-    def getActions(self):
-        return self.attributes["actions"]
-
-    def loadAttributes(self, fname):
-        with open(fname) as data_file:
-            data = json.load(data_file, object_pairs_hook=OrderedDict)
-        return data
+        self.databaseConnection = DatabaseInterface()
     
-    @staticmethod
-    def getAgentTimeDependentActions(agentId):
+        self.userIds = []
+        self.objectIds = []
+        self.userObjectPreference = {}
+        self.userHourlyActionRate = {}
+        self.userActionCount = {}
+        self.generalObjectPreference = {}
+        self.generalHourlyActionRate = np.array([0.0 for i in range(24)])
+        for line in self.databaseConnection.getBaseEventStream("PushEvent"):
+            eventTime = int(time.mktime(line["timestamp"].timetuple()))
+            hour = int((eventTime / 3600) % 24)
+            objectId = line["objectId"]
+            userId = line["userId"]
+
+            #Update the userId and his records
+            if userId not in self.userIds:  #This is a new user.
+                self.userIds.append(userId)
+                self.userActionCount[userId] = 1
+
+                #Update the userHourlyActionRate
+                hourlyActions = np.array([0.0 for i in range(24)])
+                hourlyActions[hour] += 1
+                self.userHourlyActionRate[userId] = hourlyActions
+
+                #Update the userObjectPreference
+                objectPreference = {objectId: 1.0}
+                self.userObjectPreference[userId] = objectPreference
+            else:  #Not a new user.
+                self.userActionCount[userId] += 1
+                self.userHourlyActionRate[userId][hour] += 1
+                if objectId not in self.userObjectPreference[
+                        userId]:  #Did not touch this object before
+                    self.userObjectPreference[userId][objectId] = 1.0
+                else:
+                    self.userObjectPreference[userId][objectId] += 1
+            #Update the objectIds
+            if objectId not in self.objectIds:
+                self.objectIds.append(objectId)
+
+            #Update the generalObjectPreference and generalHourlyActionRate
+            if objectId not in self.generalObjectPreference:
+                self.generalObjectPreference[objectId] = 1.0
+            else:
+                self.generalObjectPreference[objectId] += 1
+            self.generalHourlyActionRate[hour] += 1
+
+        #Update the userHourActionRate and userObjectPreference
+        for userId in self.userIds:
+            self.userHourlyActionRate[userId] /= self.userActionCount[
+                userId]
+            for objectId in self.userObjectPreference[userId]:
+                self.userObjectPreference[userId][
+                    objectId] /= self.userActionCount[userId]
+
+        #Update the generalObjectPreference and generalHourlyActionRate
+        totalActions = sum(self.userActionCount.values())
+        self.generalHourlyActionRate /= totalActions
+        for objectId in self.generalObjectPreference:
+            self.generalObjectPreference[objectId] /= totalActions
+
+    def getUserIds(self):
+        return self.userIds
+
+    def getObjectIds(self):
+        return self.objectIds
+
+    def getUserIndependentActions(self, userId):
         return None
-        
-    @staticmethod
-    def getAgentDependentActions(agentID):
+
+    def getUserHourlyActionRate(self, userId):
+        '''
+        :return: a list of HourlyActionRate instances, one for each actionType 
+        '''
+        if userId in self.userIds:
+            pullRequestAction = HourlyActionRate(
+                userId, "GITHUB_PULL_REQUEST",
+                self.userHourlyActionRate[userId])
+            pushAction = HourlyActionRate(userId, "GITHUB_PUSH",
+                                          self.userHourlyActionRate[userId])
+        else:  #This is a new user, no record.
+            pullRequestAction = HourlyActionRate(userId, "GITHUB_PULL_REQUEST",
+                                                 self.generalHourlyActionRate)
+            pushAction = HourlyActionRate(userId, "GITHUB_PUSH",
+                                          self.generalHourlyActionRate)
+
+        return [pushAction, pullRequestAction]
+
+    def getUserObjectPreference(self, userId):
+        '''
+        :return: an ObjectPreference instance
+        '''
+        if userId in self.userIds:
+            objectPreference = ObjectPreference(
+                userId, list(self.userObjectPreference[userId].keys()),
+                list(self.userObjectPreference[userId].values()))
+        else:  #This is a new user, no record.
+            objectPreference = ObjectPreference(
+                userId, self.generalObjectPreference.keys(),
+                self.generalObjectPreference.values())
+        return objectPreference
+
+    def getUserDependentActions(self, userID):
         return None
+
+
+if __name__ == '__main__':
+    analysislib = AnalysisLib()

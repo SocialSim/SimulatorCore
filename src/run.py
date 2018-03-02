@@ -1,38 +1,24 @@
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
 from AgentBuilder.AgentBuilder import AgentBuilder
-from AnalysisLib.AnalysisLib import AnalysisLib
+from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
+from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
 
-# run simulation
+
 def main():
-    # load initial agent/object attributes from config file that will be generated from database
-    analysis_lib = AnalysisLib('../config/config.json')
-    config = analysis_lib.getAttributes()
+    # Init and config AgentBuilder
+    agentBuilder = AgentBuilder(UserAgentModel=SimpleUserAgent,
+                                ObjectAgentModel=SimpleObjectAgent)
+    userAgents, objectAgents = agentBuilder.build()
 
-    agentBuilder = AgentBuilder(
-            attribute_list = config["agents"]["attributes"], 
-            analysis_lib = analysis_lib,
-            class_type = "agents")
-    agentList = agentBuilder.build()
-
-    objectBuilder = AgentBuilder(
-            attribute_list = config["objects"]["attributes"], 
-            analysis_lib = analysis_lib,
-            class_type = "objects")
-    objectList = objectBuilder.build()
-
-    simulatorCore = TimeBasedSimulator(
-            agents = agentList,
-            objects = objectList,
-            actions = analysis_lib.getActions(),
-            startTime = 0,
-            endTime = 24 * 10,
-            unitTime = 1)
-    simulatorCore.simulate()
-    simulatorCore.showLog()
+    # Init and config simulation setting
+    simulator = TimeBasedSimulator( userAgents=userAgents,
+                                    objectAgents=objectAgents,
+                                    startTime=0, endTime=24, unitTime=1)
+    simulator.run()
+    simulator.showLog()
 
     # TODO collect data and analyze
 
-    
+
 if __name__ == "__main__":
     main()
-

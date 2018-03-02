@@ -1,54 +1,43 @@
-from utils import utils
-
 import random
 import numpy as np
-import json
+from DependentEventLooger.DependentEventLogger import DependentEventLogger
+
 
 class TimeBasedSimulator():
+    '''
+    A simple implementation of a time-based simulator. The core of the simulation is a loop that advances simulation time in uniform time step. Within the loop, the simulator first
+    - shuffles the list of user agents, then
+    - for each user agent in the list, calls the agent's step() function. 
+    Time unit: hour
+    '''
 
-    def __init__(self, agents, objects, actions, startTime, endTime, unitTime):
-        self.agents = agents            
-        self.objects = objects
-        self.actions = actions
+    def __init__(self, userAgents, objectAgents, startTime, endTime, unitTime):
+        self.userAgents = userAgents
+        self.objectAgents = objectAgents
+        self.currentTime = startTime
         self.startTime = startTime
         self.endTime = endTime
         self.unitTime = unitTime
-        self.actionHistory = []
+        self.eventHistory = []
 
-        
-    def simulate(self):
-        for currentTime in np.arange(self.startTime, self.endTime, self.unitTime):
+        self.dependencyLogger = DependentEventLogger(10, self.startTime, self.unitTime)
+
+    def run(self):
+        for currentTime in np.arange(self.startTime, self.endTime,
+                                     self.unitTime):
             self.step(currentTime)
 
-
     def step(self, currentTime):
-        random.shuffle(self.agents)
-        for agent in self.agents:
-            actions = agent.step(currentTime)
-            for action in actions:
-                # given agent-generated action, update agents and objects based on interaction
-                self.update(action)
-                self.actionHistory.append(action)
+        random.shuffle(self.userAgents)
+        self.dependencyLogger.step()
 
+        for agent in self.userAgents:
+            events = agent.step(currentTime, self.unitTime)
+            self.eventHistory += events
 
-    def update(self, action):
-        for targetObject in self.objects:
-            if targetObject.returnId() == action[1]:
-                targetObject.updateAttributes(action[0], self.actions["object_attribute"][self.actions["action"].index(action[2])], action[3])
-                break
-
-            
     def showLog(self):
-        # show log of event history
-        for i in range(len(self.actionHistory)):
-            print(self.actionHistory[i])
+        for event in self.eventHistory:
+            print(event)
 
-        # show log of object attributes
-        for i in range(len(self.objects)):
-            attributes = self.objects[i].returnAttributes()
-            print(json.dumps(attributes, indent=1, cls=utils.fixed_encoder))
-
-        # show log of agent attributes
-        for i in range(len(self.agents)):
-            attributes = self.agents[i].returnAttributes()
-            print(json.dumps(attributes, indent=1, cls=utils.fixed_encoder))
+    def getCurrentTime(self):
+        return self.currentTime

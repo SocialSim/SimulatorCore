@@ -1,6 +1,6 @@
 import random
-import numpy as np
-from DependentEventLooger.DependentEventLogger import DependentEventLogger
+
+from DependentEventLogger.DependentEventLogger import DependentEventLogger
 
 
 class TimeBasedSimulator():
@@ -19,20 +19,20 @@ class TimeBasedSimulator():
         self.endTime = endTime
         self.unitTime = unitTime
         self.eventHistory = []
-
+        
         self.dependencyLogger = DependentEventLogger(10, self.startTime, self.unitTime)
 
     def run(self):
-        for currentTime in np.arange(self.startTime, self.endTime,
-                                     self.unitTime):
-            self.step(currentTime)
+        while self.currentTime < self.endTime:
+            self.step()
+            self.currentTime += self.unitTime
 
-    def step(self, currentTime):
+    def step(self):
         random.shuffle(self.userAgents)
         self.dependencyLogger.step()
 
         for agent in self.userAgents:
-            events = agent.step(currentTime, self.unitTime)
+            events = agent.step(self.currentTime, self.unitTime)
             self.eventHistory += events
 
     def showLog(self):

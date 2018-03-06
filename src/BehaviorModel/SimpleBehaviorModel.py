@@ -1,5 +1,6 @@
-from scipy.stats import rv_discrete
 import random
+from scipy.stats import rv_discrete
+from common.event import Event
 
 
 class SimpleBehaviorModel():
@@ -29,10 +30,10 @@ class SimpleBehaviorModel():
                 agentId = hourlyActionRate.agentId
                 objectId = rv.rvs(size=1)[0]  # Get 1 sample the distribution
                 actionType = hourlyActionRate.actionType
-                event = [
-                    agentId, objectId, actionType, currentTime,
-                    currentTime + unitTime
-                ]
+                event = Event(userID = agentId,
+                        objID = objectId,
+                        eventType = actionType,
+                        timestamp = currentTime)
                 events.append(event)
 
         return events

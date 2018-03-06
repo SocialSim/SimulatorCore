@@ -2,6 +2,7 @@ from scipy.stats import rv_discrete
 from DependentEventLogger.DependentEventLogger import DependentEventLogger
 import random
 import numpy as np
+from common.event import Event
 
 
 class DependentBehaviorModel():
@@ -51,10 +52,10 @@ class DependentBehaviorModel():
                         agentId = userDependency.userId #ID of this user, but not the dependent user.
                         objectId = rv.rvs(size=1)[0]  #TODO: set the same object as you dependent user did.
                         actionType = eventType
-                        event = [
-                            agentId, objectId, actionType, currentTime,
-                            currentTime + unitTime
-                        ]
+                        event = Event(userID = agentId,
+                                objID = objectId,
+                                eventType = actionType,
+                                timestamp = currentTime)
                         events.append(event)
 
         return events

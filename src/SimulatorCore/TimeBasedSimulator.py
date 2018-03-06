@@ -1,6 +1,7 @@
 import random
 
 from DependentEventLogger.DependentEventLogger import DependentEventLogger
+from common.event import Event
 
 
 class TimeBasedSimulator():
@@ -32,17 +33,21 @@ class TimeBasedSimulator():
 
         for agent in self.userAgents:
             events = agent.step(self.currentTime, self.unitTime)
-            #Log the simulated events
-            for event in events:
-                userId = event[0]
-                eventType = event[2]
-                timeStamp = event[3]
-                self.dependentEventLogger.logUserEventAtTime(userId, eventType, timeStamp)
+            self.logEvents(events)
             self.eventHistory += events
+
+    def logEvents(self, events):
+        for event in events:
+            userId = event.getUserID()
+            eventType = event.getEventType()
+            timeStamp = event.getTimestamp()
+            self.dependentEventLogger.logUserEventAtTime(userID = userId,
+                    eventType = eventType,
+                    timestamp = timeStamp)
 
     def showLog(self):
         for event in self.eventHistory:
-            print(event)
+            event.show()
 
     def getCurrentTime(self):
         return self.currentTime

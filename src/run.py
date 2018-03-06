@@ -11,6 +11,7 @@ from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
 
 def main():
     argparser.parseArguments()
+
     logging.basicConfig(stream=sys.stderr,
                         format='[%(asctime)s] %(name)s:%(message)s',
                         datefmt='%H:%M:%S',
@@ -18,7 +19,6 @@ def main():
     logger = logging.getLogger("main")
     
     logger.info("Init and config agent builder...")
-    # Init and config AgentBuilder
     agentBuilder = AgentBuilder(UserAgentModel=DependentUserAgent,
                                 ObjectAgentModel=SimpleObjectAgent)
     userAgents, objectAgents = agentBuilder.build()

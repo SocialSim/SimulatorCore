@@ -10,3 +10,10 @@ class IndependentAction():
         self.prob = prob
 
         assert (0.0 <= prob <= 1.0)
+
+def IndependentActionSerializer(obj):
+    if isinstance(obj, IndependentAction):
+        serial = str(obj)
+        return serial
+    else:
+        raise TypeError ("Type not serializable")

@@ -1,10 +1,11 @@
-from common.const import *
 import numpy as np
-from collections import deque
 import copy
+import json
 
+from collections import deque
+from common.const import *
 from Dependency.ObjectPreference import ObjectPreference
-from Dependency.HourlyActionRate import HourlyActionRate
+from Dependency.HourlyActionRate import *
 from Dependency.UserDependency import UserDependency
 
 
@@ -55,6 +56,8 @@ class AnalysisLib:
 
         #Update the userHourActionRate and userObjectPreference
         self.summarizeUserDistributions()
+
+        self.storeStatistics()
 
 
     def firstPass(self):
@@ -361,6 +364,58 @@ class AnalysisLib:
 
     def getUserDependentActions(self, userID):
         return None
+
+    def storeStatistics(self):
+        self.storeUserID()
+        self.storeObjID()
+        self.storeUserActionRate()
+        self.storeUserObjectPreference()
+        self.storeUserDependency()
+
+    def storeUserID(self):
+        with open(USER_ID_FILE, 'w') as outfile:
+            json.dump(self.userIds, outfile)
+
+    def storeObjID(self):
+        with open(OBJ_ID_FILE, 'w') as outfile:
+            json.dump(self.objectIds, outfile)
+
+    def storeUserActionRate(self):
+        allActionRate = dict()
+        for userId in self.userIds:
+            actionRate = self.getUserHourlyActionRate(userId)
+            allActionRate[userId] = actionRate
+
+        newUserActionRate = self.getUserHourlyActionRate(-1)
+        allActionRate[-1] = newUserActionRate
+
+        with open(USER_ACTION_RATE_FILE, 'w') as outfile:
+            print allActionRate
+            json.dump(list(allActionRate.values()), outfile, default = HourlyActionRateSerializer)
+
+    def storeUserObjectPreference(self):
+        allObjectPreference = dict()
+        for userId in self.userIds:
+            objectPreference = self.getUserObjectPreference(userId)
+            allObjectPreference[userId] = objectPreference
+
+        newUserObjectPreference = self.getUserObjectPreference(-1)
+        allObjectPreference[-1] = newUserObjectPreference
+
+        with open(OBJECT_PREFERENCE_FILE, 'w') as outfile:
+            json.dump(allObjectPreference, outfile)
+
+    def storeUserDependency(self):
+        allUserDependency = dict()
+        for userId in self.userIds:
+            userDependency = self.getUserDependency(userId)
+            allUserDependency[userId] = userDependency
+
+        newUserDependency = self.getUserDependency(-1)
+        allUserDependency[-1] = newUserDependency
+
+        with open(USER_DEPENDENCY_FILE, 'w') as outfile:
+            json.dump(allUserDependency, outfile)
 
 
 if __name__ == '__main__':

@@ -17,3 +17,10 @@ class HourlyActionRate():
         assert (round(sum(probs), 6), 1.0)
         assert (all(0.0 <= prob <= 1.0 for prob in probs))
         assert (len(probs) == 24)
+
+def HourlyActionRateSerializer(obj):
+    if isinstance(obj, HourlyActionRate):
+        serial = str(obj)
+        return serial
+    else:
+        raise TypeError ("Type not serializable")

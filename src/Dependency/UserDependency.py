@@ -9,3 +9,10 @@ class UserDependency():
         self.userDependency = userDependency
 
         assert (all(0.0 <= depProb <= 1.0 for depProb in userDependency.values()))
+
+def UserDependencySerializer(obj):
+    if isinstance(obj, UserDependency):
+        serial = str(obj)
+        return serial
+    else:
+        raise TypeError ("Type not serializable")

@@ -9,8 +9,9 @@ from SimpleUserAgent import SimpleUserAgent
 
 class DependentUserAgent(SimpleUserAgent):
     '''
-    A Dependent Agent model for GitHub users. The user generates actions according to
-    (i) Independent behaviors
+    A Dependent Agent model for GitHub users. The user generates actions
+    according to
+    (1) Independent behaviors
     (2) Dependent actions according to his dependency relationships
     both of which were computed from the database using AnalysisLib.
     '''
@@ -22,8 +23,9 @@ class DependentUserAgent(SimpleUserAgent):
         self.build()
 
     def build(self):
-        '''Query AnalysisLib to get an ObjectPreference instance and a list of HourlyActionRate instances, as
-        well as the userDependency relationships.'''
+        '''Query AnalysisLib to get an ObjectPreference instance and a list of
+        HourlyActionRate instances, as well as the userDependency
+        relationships.'''
 
         analysislib = AnalysisLib.getInstance()
         self.hourlyActionRates = analysislib.getUserHourlyActionRate(
@@ -34,10 +36,11 @@ class DependentUserAgent(SimpleUserAgent):
 
     def step(self, currentTime, unitTime):
         '''
-        The step() function is used by TimeBasedSimulator. This function is invoked at every time step in the simulation loop.
+        The step() function is used by TimeBasedSimulator. This function is
+        invoked at every time step in the simulation loop.
 
         :param currentTime: current simulation time
-        :return: the list of instantaneous events the agent generates between currentTime and currentTime+unitTime.
+        :return: the list of instantaneous events the agent generates
         '''
 
         # FIXME what if simulation time DOES NOT advance every one hour

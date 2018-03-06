@@ -5,6 +5,7 @@ import common.argparser as argparser
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
 from AgentBuilder.AgentBuilder import AgentBuilder
 from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
+from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
 
 
@@ -17,7 +18,8 @@ def main():
     logger = logging.getLogger("main")
     
     logger.info("Init and config agent builder...")
-    agentBuilder = AgentBuilder(UserAgentModel=SimpleUserAgent,
+    # Init and config AgentBuilder
+    agentBuilder = AgentBuilder(UserAgentModel=DependentUserAgent,
                                 ObjectAgentModel=SimpleObjectAgent)
     userAgents, objectAgents = agentBuilder.build()
 

@@ -25,17 +25,22 @@ class SimpleBehaviorModel():
             values=(objectIndexes, objectPreference.probs))
 
         for hourlyActionRate in hourlyActionRates:  #Consider each type of actions independently
+            dailyActivityLevel = hourlyActionRate.activityLevel # How many actions of this type this user may take per day?
             if sum(hourlyActionRate.probs) == 0: #No record on this type of actions.
                 continue
+            if dailyActivityLevel == 0:
+                continue
             prob = hourlyActionRate.probs[currentTime % 24]
-            if random.random() <= prob:  #He will adopt an action of this type
-                agentId = hourlyActionRate.agentId
-                objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
-                actionType = hourlyActionRate.actionType
-                event = [
-                    agentId, objectId, actionType, currentTime,
-                    currentTime + unitTime
-                ]
-                events.append(event)
+
+            for count in range(dailyActivityLevel):
+                if random.random() <= prob:  # He will adopt an action of this type
+                    agentId = hourlyActionRate.agentId
+                    objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
+                    actionType = hourlyActionRate.actionType
+                    event = [
+                        agentId, objectId, actionType, currentTime,
+                        currentTime + unitTime
+                    ]
+                    events.append(event)
 
         return events

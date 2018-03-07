@@ -38,6 +38,7 @@ class AnalysisLib:
         self.userHourlyActionRate = {} #Should only count the independent actions, specific to event types.
         self.userTotalActionCount = {}
         self.userDependencies = {}
+        self.generalTypeActionCount = {} # The general count of actions belonging to each type.
         self.generalObjectPreference = {}
         self.generalHourlyActionRate = self.initializeHourlyDistributions()
 
@@ -170,8 +171,9 @@ class AnalysisLib:
         '''
         totalActions = sum(self.userTotalActionCount.values())
         for eventType in self.eventTypes:
-            if totalActions > 0:
-                self.generalHourlyActionRate[eventType] /= totalActions
+            self.generalTypeActionCount[eventType] = sum(self.generalHourlyActionRate[eventType])
+            if self.generalTypeActionCount[eventType] > 0:
+                self.generalHourlyActionRate[eventType] /= self.generalTypeActionCount[eventType]
         for objectId in self.generalObjectPreference:
             self.generalObjectPreference[objectId] /= totalActions
 
@@ -336,8 +338,6 @@ class AnalysisLib:
         '''
         :return: a list of HourlyActionRate instances, one for each actionType 
         '''
-        totalActions = sum(self.userTotalActionCount.values())
-        averageActions = totalActions / len(self.userIds)
         userHourlyActionRate = []
         if userId in self.userIds:
             for eventType in self.eventTypes:
@@ -349,7 +349,7 @@ class AnalysisLib:
         else:  #This is a new user, no record.
             for eventType in self.eventTypes:
                 eventTypeHourlyActionRate = HourlyActionRate(
-                    userId, self.userTypeEventCount(userId, eventType), eventType,
+                    userId, self.generalTypeActionCount[eventType], eventType,
                     self.generalHourlyActionRate[eventType]
                 )
                 userHourlyActionRate.append(eventTypeHourlyActionRate)
@@ -391,9 +391,12 @@ class AnalysisLib:
 
 if __name__ == '__main__':
     analysislib = AnalysisLib()
-    for userId in analysislib.userIds:
-        if analysislib.getUserDependency(userId).userDependency:
-            print("User Id: %s"%userId, "number of actions: %d"%analysislib.userTotalActionCount[userId],
-                  "dependencies: ", analysislib.getUserDependency(userId).userDependency)
+    # for userId in analysislib.userIds:
+    #     if analysislib.getUserDependency(userId).userDependency:
+    #         print("User Id: %s"%userId, "number of actions: %d"%analysislib.userTotalActionCount[userId],
+    #               "dependencies: ", analysislib.getUserDependency(userId).userDependency)
         # print(analysislib.userTotalActionCount[userId])
         # print(analysislib.userHourlyActionRate[userId])
+    for eventType in analysislib.eventTypes:
+        print(eventType, analysislib.generalTypeActionCount[eventType])
+        # print(eventType, analysislib.generalHourlyActionRate[eventType])

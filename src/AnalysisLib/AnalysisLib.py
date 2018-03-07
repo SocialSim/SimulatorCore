@@ -170,9 +170,8 @@ class AnalysisLib:
         '''
         totalActions = sum(self.userTotalActionCount.values())
         for eventType in self.eventTypes:
-            userTypeEventCount = self.userTypeEventCount(userId, eventType)
-            if userTypeEventCount > 0:
-                self.generalHourlyActionRate[eventType] /= userTypeEventCount
+            if totalActions > 0:
+                self.generalHourlyActionRate[eventType] /= totalActions
         for objectId in self.generalObjectPreference:
             self.generalObjectPreference[objectId] /= totalActions
 

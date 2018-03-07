@@ -51,3 +51,10 @@ class TimeBasedSimulator():
 
     def getCurrentTime(self):
         return self.currentTime
+
+    def getAllUserIDs(self):
+        ids = list()
+        for agent in self.userAgents:
+            ids.append(agent.getID())
+        return ids
+        

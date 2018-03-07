@@ -366,11 +366,16 @@ class AnalysisLib:
         return None
 
     def storeStatistics(self):
+        self.checkStatFolder()
         self.storeUserID()
         self.storeObjID()
         self.storeUserActionRate()
         self.storeUserObjectPreference()
         self.storeUserDependency()
+
+    def checkStatFolder(self):
+        if not os.path.exists(STAT_PATH):
+            os.makedirs(STAT_PATH)
 
     def storeUserID(self):
         with open(USER_ID_FILE, 'w') as outfile:

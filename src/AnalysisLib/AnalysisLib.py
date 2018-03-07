@@ -4,9 +4,9 @@ import json
 
 from collections import deque
 from common.const import *
-from Dependency.ObjectPreference import ObjectPreference
+from Dependency.ObjectPreference import *
 from Dependency.HourlyActionRate import *
-from Dependency.UserDependency import UserDependency
+from Dependency.UserDependency import *
 
 
 class AnalysisLib:
@@ -395,8 +395,6 @@ class AnalysisLib:
         allActionRate[-1] = newUserActionRate
 
         with open(USER_ACTION_RATE_FILE, 'w') as outfile:
-            print allActionRate[194560][0]
-            print allActionRate[194560][1]
             json.dump(allActionRate, outfile, default = HourlyActionRateSerializer)
 
     def storeUserObjectPreference(self):
@@ -409,7 +407,7 @@ class AnalysisLib:
         allObjectPreference[-1] = newUserObjectPreference
 
         with open(OBJECT_PREFERENCE_FILE, 'w') as outfile:
-            json.dump(allObjectPreference, outfile)
+            json.dump(allObjectPreference, outfile, default = ObjectPreferenceSerialier)
 
     def storeUserDependency(self):
         allUserDependency = dict()
@@ -421,7 +419,7 @@ class AnalysisLib:
         allUserDependency[-1] = newUserDependency
 
         with open(USER_DEPENDENCY_FILE, 'w') as outfile:
-            json.dump(allUserDependency, outfile)
+            json.dump(allUserDependency, outfile, default = UserDependencySerializer)
 
 
 if __name__ == '__main__':

@@ -170,7 +170,7 @@ class AnalysisLib:
         '''
         totalActions = sum(self.userTotalActionCount.values())
         for eventType in self.eventTypes:
-            userTypeEventCount = sum(self.generalHourlyActionRate[eventType])
+            userTypeEventCount = self.userTypeEventCount(userId, eventType)
             if userTypeEventCount > 0:
                 self.generalHourlyActionRate[eventType] /= userTypeEventCount
         for objectId in self.generalObjectPreference:
@@ -280,7 +280,7 @@ class AnalysisLib:
         '''
         for userId in self.userIds:
             for eventType in self.eventTypes:
-                userTypeEventCount = sum(self.userHourlyActionRate[userId][eventType])
+                userTypeEventCount = self.userTypeEventCount(userId, eventType)
                 if userTypeEventCount > 0:
                     self.userHourlyActionRate[userId][eventType] /= userTypeEventCount
             for objectId in self.userObjectPreference[userId]:
@@ -318,6 +318,9 @@ class AnalysisLib:
     def hour(self, eventTime):
         return int((eventTime / 3600) % 24)
 
+    def userTypeEventCount(self, userId, eventType):
+        return sum(self.userHourlyActionRate[userId][eventType])
+
     def getUserIds(self):
         return self.userIds
 
@@ -340,14 +343,14 @@ class AnalysisLib:
         if userId in self.userIds:
             for eventType in self.eventTypes:
                 eventTypeHourlyActionRate = HourlyActionRate(
-                    userId, sum(self.userHourlyActionRate[userId][eventType]), eventType,
+                    userId, self.userTypeEventCount(userId, eventType), eventType,
                     self.userHourlyActionRate[userId][eventType]
                 )
                 userHourlyActionRate.append(eventTypeHourlyActionRate)
         else:  #This is a new user, no record.
             for eventType in self.eventTypes:
                 eventTypeHourlyActionRate = HourlyActionRate(
-                    userId, sum(self.generalHourlyActionRate[eventType]), eventType,
+                    userId, self.userTypeEventCount(userId, eventType), eventType,
                     self.generalHourlyActionRate[eventType]
                 )
                 userHourlyActionRate.append(eventTypeHourlyActionRate)

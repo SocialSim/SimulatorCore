@@ -18,6 +18,10 @@ class HourlyActionRate():
         assert (all(0.0 <= prob <= 1.0 for prob in probs))
         assert (len(probs) == 24)
 
+    def __str__(self):
+        return "{%s %s %s %s}" % (str(self.agentId), str(self.activityLevel), 
+                str(self.actionType), str(self.probs))
+
 def HourlyActionRateSerializer(obj):
     if isinstance(obj, HourlyActionRate):
         serial = str(obj)

@@ -390,8 +390,9 @@ class AnalysisLib:
         allActionRate[-1] = newUserActionRate
 
         with open(USER_ACTION_RATE_FILE, 'w') as outfile:
-            print allActionRate
-            json.dump(list(allActionRate.values()), outfile, default = HourlyActionRateSerializer)
+            print allActionRate[194560][0]
+            print allActionRate[194560][1]
+            json.dump(allActionRate, outfile, default = HourlyActionRateSerializer)
 
     def storeUserObjectPreference(self):
         allObjectPreference = dict()

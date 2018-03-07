@@ -6,7 +6,7 @@ class ObjectPreference():
     def __init__(self, agentId, objectIds, probs):
         self.agentId = agentId
         self.objectIds = objectIds
-        self.probs = probs
+        self.probs = list(probs)
 
         assert (len(objectIds) == len(probs))
         assert (round(sum(probs), 6), 1.0)

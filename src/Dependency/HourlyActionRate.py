@@ -11,7 +11,7 @@ class HourlyActionRate():
         self.agentId = agentId
         self.activityLevel = activityLevel
         self.actionType = actionType
-        self.probs = probs
+        self.probs = list(probs)
 
         # Make sure probs is a proper distribution
         assert (round(sum(probs), 6), 1.0)

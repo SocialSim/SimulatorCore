@@ -24,9 +24,9 @@ class AnalysisLib:
         else:
             AnalysisLib._instance = self
 
-        self.dependencyTimeLength = 3600 #Initially set the dependency window size as one hour
+        self.dependencyTimeLength = 300 #Initially set the dependency window size as one hour
         self.activityThreshold = 10 #Users with activities over this threshold will be set as active users.
-        self.dependencyThreshold = 0.1 # We will only set the dependency if the conditional prob is over this threshold.
+        self.dependencyThreshold = 0.58 # We will only set the dependency if the conditional prob is over this threshold.
         self.dependencyWindow = deque() #Use a queue to represent the events within the dependency time window
         self.userIds = []
         self.objectIds = []
@@ -133,7 +133,7 @@ class AnalysisLib:
         eventTime = int(event[0])
         hour = int((eventTime / 3600) % 24)
         objectId = int(event[1])
-        userId = int(event[2])
+        userId = int(event[2])%10
         return event, eventTime, hour, objectId, userId
 
     def updateGeneralDistributions(self, objectId, hour):
@@ -263,7 +263,7 @@ class AnalysisLib:
         :return:
         '''
         for userId in self.userIds:
-            self.userHourlyActionRate[userId] /= self.userTotalActionCount[ #FIXME: change to userIndependentAction
+            self.userHourlyActionRate[userId] /= self.userIndependentActionCount[ #FIXME: change to userIndependentAction
                 userId]
             for objectId in self.userObjectPreference[userId]:
                 self.userObjectPreference[userId][

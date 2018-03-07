@@ -1,4 +1,5 @@
 from common.const import *
+import common.argparser as argparser
 import numpy as np
 from collections import deque
 import copy
@@ -63,7 +64,7 @@ class AnalysisLib:
         Will clean the dependencies, and do a seconde pass to update the independent actions
         :return:
         '''
-        with open(DATAPATH + "/test.txt", "r") as file:
+        with open(DATAPATH + argparser.sargs.dataset, "r") as file:
             for line in file:
                 if not line:
                     break

@@ -7,6 +7,7 @@ from Dependency.ObjectPreference import ObjectPreference
 from Dependency.HourlyActionRate import HourlyActionRate
 from Dependency.UserDependency import UserDependency
 
+FILE_NAME = DATAPATH + "/compressed_event_2015-01-01.txt"
 
 class AnalysisLib:
     _instance = None
@@ -24,19 +25,22 @@ class AnalysisLib:
         else:
             AnalysisLib._instance = self
 
-        self.dependencyTimeLength = 300 #Initially set the dependency window size as one hour
-        self.activityThreshold = 10 #Users with activities over this threshold will be set as active users.
-        self.dependencyThreshold = 0.58 # We will only set the dependency if the conditional prob is over this threshold.
+        self.dependencyTimeLength = 3600 #Initially set the dependency window size as one hour
+        self.activityThreshold = 3 #Users with activities over this threshold will be set as active users.
+        self.dependencyThreshold = 0.2 # We will only set the dependency if the conditional prob is over this threshold.
         self.dependencyWindow = deque() #Use a queue to represent the events within the dependency time window
         self.userIds = []
         self.objectIds = []
+        self.eventTypes = ["CommitCommentEvent", "CreateEvent", "DeleteEvent", "ForkEvent", "IssueCommentEvent",
+                           "IssuesEvent", "PullRequestEvent", "PushEvent", "WatchEvent", "PublicEvent",
+                           "MemberEvent", "GollumEvent", "ReleaseEvent", "PullRequestReviewCommentEvent"]
         self.userObjectPreference = {}
-        self.userHourlyActionRate = {} #Should only count the independent actions.
+        self.userHourlyActionRate = {} #Should only count the independent actions, specific to event types.
         self.userTotalActionCount = {}
-        self.userIndependentActionCount = {}
         self.userDependencies = {}
         self.generalObjectPreference = {}
-        self.generalHourlyActionRate = np.array([0.0 for i in range(24)])
+        self.generalHourlyActionRate = self.initializeHourlyDistributions()
+
 
         #The first pass, we determine the initial dependencies, and user hourly action rate
         self.firstPass()
@@ -63,12 +67,13 @@ class AnalysisLib:
         Will clean the dependencies, and do a seconde pass to update the independent actions
         :return:
         '''
-        with open(DATAPATH + "/test.txt", "r") as file:
+        with open(FILE_NAME, "r") as file:
             for line in file:
                 if not line:
                     break
                 else:
-                    event, eventTime, hour, objectId, userId = self.eventSplit(line)
+                    line = line.strip('\n')
+                    eventTime, hour, objectId, userId, eventType = self.eventSplit(line)
                     #update the dependencyWindow
                     self.updateDependencyWindow(eventTime)
                     #Update the objectIds
@@ -79,7 +84,7 @@ class AnalysisLib:
                         self.userIds.append(userId)
                         self.userTotalActionCount[userId] = 1
                         #Update the userHourlyActionRate
-                        self.updateUserHourlyActionRate(userId, hour, "new")
+                        self.updateUserHourlyActionRate(userId, hour, eventType, "new")
                         #Update the userObjectPreference
                         self.updateUserObjectPreference(userId, objectId, "new")
                         #Update the userDependencies
@@ -88,14 +93,14 @@ class AnalysisLib:
                     else:  #Not a new user.
                         self.userTotalActionCount[userId] += 1
                         #Update the userHourlyActionRate
-                        self.updateUserHourlyActionRate(userId, hour, "old")
+                        self.updateUserHourlyActionRate(userId, hour, eventType, "old")
                         #Update the userObjectPreference
                         self.updateUserObjectPreference(userId, objectId, "old")
                         # Update the userDependencies
                         self.addUserDependency(userId, "old")
 
                     #Update the general hourlyActionRate and objectPreference
-                    self.updateGeneralDistributions(objectId, hour)
+                    self.updateGeneralDistributions(objectId, hour, eventType)
 
                     # Append this event to the dependnecy window
                     self.dependencyWindow.append([eventTime, objectId, userId])
@@ -106,19 +111,18 @@ class AnalysisLib:
         :return:
         '''
         self.dependencyWindow.clear()
-        self.userIndependentActionCount = copy.deepcopy(self.userTotalActionCount)
-        with open(DATAPATH + "/test.txt", "r") as file:
+        with open(FILE_NAME, "r") as file:
             for line in file:
                 if not line:
                     break
                 else:
-                    event, eventTime, hour, objectId, userId = self.eventSplit(line)
+                    line = line.strip('\n')
+                    eventTime, hour, objectId, userId, eventType = self.eventSplit(line)
                     # update the dependencyWindow
                     self.updateDependencyWindow(eventTime)
                     #Update the independent actions.
                     if not self.isIndependentAction(userId):
-                        self.userHourlyActionRate[userId][hour] -= 1 #FIXME: some problems here
-                        self.userIndependentActionCount[userId] -= 1
+                        self.userHourlyActionRate[userId][eventType][hour] -= 1 #FIXME: some problems here
 
                     # Append this event to the dependnecy window
                     self.dependencyWindow.append([eventTime, objectId, userId])
@@ -129,14 +133,25 @@ class AnalysisLib:
         :param line: A line of input with format #Event format: (eventTime, objectId, userId)
         :return:
         '''
-        event = line.split(",")
+        event = line.split(" ")
         eventTime = int(event[0])
         hour = int((eventTime / 3600) % 24)
-        objectId = int(event[1])
-        userId = int(event[2])%10
-        return event, eventTime, hour, objectId, userId
+        objectId = event[1]
+        userId = event[2]
+        eventType = event[3]
+        return eventTime, hour, objectId, userId, eventType
 
-    def updateGeneralDistributions(self, objectId, hour):
+    def initializeHourlyDistributions(self):
+        '''
+        Initialize the hourly action distribution
+        :return:
+        '''
+        initialHourlyActionRate = {}
+        for eventType in self.eventTypes:
+            initialHourlyActionRate[eventType] = np.array([0.0 for i in range(24)])
+        return copy.deepcopy(initialHourlyActionRate)
+
+    def updateGeneralDistributions(self, objectId, hour, eventType):
         '''
         Update the general HourlyActionRate and ObjectPreference
         :param objId:
@@ -146,7 +161,7 @@ class AnalysisLib:
             self.generalObjectPreference[objectId] = 1.0
         else:
             self.generalObjectPreference[objectId] += 1
-        self.generalHourlyActionRate[hour] += 1
+        self.generalHourlyActionRate[eventType][hour] += 1
 
     def summarizeGeneralDistribtions(self):
         '''
@@ -154,7 +169,10 @@ class AnalysisLib:
         :return:
         '''
         totalActions = sum(self.userTotalActionCount.values())
-        self.generalHourlyActionRate /= totalActions
+        for eventType in self.eventTypes:
+            userTypeEventCount = sum(self.generalHourlyActionRate[eventType])
+            if userTypeEventCount > 0:
+                self.generalHourlyActionRate[eventType] /= userTypeEventCount
         for objectId in self.generalObjectPreference:
             self.generalObjectPreference[objectId] /= totalActions
 
@@ -177,7 +195,7 @@ class AnalysisLib:
             else:
                 break
 
-    def updateUserHourlyActionRate(self, userId, hour, userType):
+    def updateUserHourlyActionRate(self, userId, hour, eventType, userType):
         '''
         In the first pass, regard all the events as independent, and add them to hourly distribution.
         :param userId:
@@ -186,11 +204,9 @@ class AnalysisLib:
         :return:
         '''
         if userType == "new":
-            hourlyActions = np.array([0.0 for i in range(24)])
-            hourlyActions[hour] += 1
-            self.userHourlyActionRate[userId] = hourlyActions
-        else:
-            self.userHourlyActionRate[userId][hour] += 1
+            self.userHourlyActionRate[userId] = self.initializeHourlyDistributions()
+
+        self.userHourlyActionRate[userId][eventType][hour] += 1
 
     def updateUserObjectPreference(self, userId, objectId, userType):
         '''
@@ -263,8 +279,10 @@ class AnalysisLib:
         :return:
         '''
         for userId in self.userIds:
-            self.userHourlyActionRate[userId] /= self.userIndependentActionCount[ #FIXME: change to userIndependentAction
-                userId]
+            for eventType in self.eventTypes:
+                userTypeEventCount = sum(self.userHourlyActionRate[userId][eventType])
+                if userTypeEventCount > 0:
+                    self.userHourlyActionRate[userId][eventType] /= userTypeEventCount
             for objectId in self.userObjectPreference[userId]:
                 self.userObjectPreference[userId][
                     objectId] /= self.userTotalActionCount[userId]
@@ -306,6 +324,9 @@ class AnalysisLib:
     def getObjectIds(self):
         return self.objectIds
 
+    def getEventTypes(self):
+        return self.eventTypes
+
     def getUserIndependentActions(self, userId):
         return None
 
@@ -315,20 +336,23 @@ class AnalysisLib:
         '''
         totalActions = sum(self.userTotalActionCount.values())
         averageActions = totalActions / len(self.userIds)
+        userHourlyActionRate = []
         if userId in self.userIds:
-            pullRequestAction = HourlyActionRate(
-                userId, self.userIndependentActionCount[userId], "GITHUB_PULL_REQUEST",
-                self.userHourlyActionRate[userId])
-            pushAction = HourlyActionRate(userId, self.userIndependentActionCount[userId],
-                                          "GITHUB_PUSH",
-                                          self.userHourlyActionRate[userId])
+            for eventType in self.eventTypes:
+                eventTypeHourlyActionRate = HourlyActionRate(
+                    userId, sum(self.userHourlyActionRate[userId][eventType]), eventType,
+                    self.userHourlyActionRate[userId][eventType]
+                )
+                userHourlyActionRate.append(eventTypeHourlyActionRate)
         else:  #This is a new user, no record.
-            pullRequestAction = HourlyActionRate(userId, averageActions, "GITHUB_PULL_REQUEST",
-                                                 self.generalHourlyActionRate)
-            pushAction = HourlyActionRate(userId, averageActions, "GITHUB_PUSH",
-                                          self.generalHourlyActionRate)
+            for eventType in self.eventTypes:
+                eventTypeHourlyActionRate = HourlyActionRate(
+                    userId, sum(self.generalHourlyActionRate[eventType]), eventType,
+                    self.generalHourlyActionRate[eventType]
+                )
+                userHourlyActionRate.append(eventTypeHourlyActionRate)
 
-        return [pushAction, pullRequestAction]
+        return userHourlyActionRate
 
     def getUserObjectPreference(self, userId):
         '''
@@ -366,9 +390,8 @@ class AnalysisLib:
 if __name__ == '__main__':
     analysislib = AnalysisLib()
     for userId in analysislib.userIds:
-        print("User Id: %d"%userId, "number of actions: %d"%analysislib.userTotalActionCount[userId],
-              "dependencies: ", analysislib.getUserDependency(userId).userDependency)
-        # print(analysislib.userIndependentActionCount[userId])
+        if analysislib.getUserDependency(userId).userDependency:
+            print("User Id: %s"%userId, "number of actions: %d"%analysislib.userTotalActionCount[userId],
+                  "dependencies: ", analysislib.getUserDependency(userId).userDependency)
         # print(analysislib.userTotalActionCount[userId])
-        print(analysislib.userHourlyActionRate[userId])
-        print(analysislib.getUserHourlyActionRate(userId[0]))
+        # print(analysislib.userHourlyActionRate[userId])

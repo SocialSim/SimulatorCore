@@ -5,7 +5,10 @@ import numpy as np
 
 
 class DependentBehaviorModel():
-    eventTypes = ["GITHUB_PULL_REQUEST", "GITHUB_PUSH"]
+
+    eventTypes = ["CommitCommentEvent", "CreateEvent", "DeleteEvent", "ForkEvent", "IssueCommentEvent",
+                  "IssuesEvent", "PullRequestEvent", "PushEvent", "WatchEvent", "PublicEvent",
+                  "MemberEvent", "GollumEvent", "ReleaseEvent", "PullRequestReviewCommentEvent"]
 
     def __init__(self):
         pass
@@ -28,15 +31,18 @@ class DependentBehaviorModel():
 
         dependencyLogger = DependencyLogger.getInstance()
 
+        objectIndexes = [i for i in range(len(objectPreference.objectIds))]
         rv = rv_discrete(
-            values=(objectPreference.objectIds, objectPreference.probs))
+            values=(objectIndexes, objectPreference.probs))
 
-        if not userDependency.depUserIds:
+        if not userDependency.depUserIds: # No dependency for this user
             return events
 
         for depUserId in userDependency.depUserIds:  # Consider each pairwise dependency independently
             prob = userDependency.userDependency[depUserId]
-            dependentEventFlag = {"GITHUB_PULL_REQUEST": False, "GITHUB_PUSH": False}
+            dependentEventFlag = {}
+            for eventType in DependentBehaviorModel.eventTypes:
+                dependentEventFlag[eventType] = False
             #First check if the dependent user performed action during the dpendency window.
             for timestamp in np.arange(currentTime - dependencyLength, currentTime, unitTime):
                 if timestamp < 0:
@@ -49,7 +55,7 @@ class DependentBehaviorModel():
                 if dependentEventFlag[eventType]:
                     if random.random() <= prob:  # He will adopt an action of this type
                         agentId = userDependency.userId #ID of this user, but not the dependent user.
-                        objectId = rv.rvs(size=1)[0]  #TODO: set the same object as you dependent user did.
+                        objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
                         actionType = eventType
                         event = [
                             agentId, objectId, actionType, currentTime,

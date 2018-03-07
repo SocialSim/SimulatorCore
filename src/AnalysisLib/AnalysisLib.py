@@ -368,6 +368,7 @@ if __name__ == '__main__':
     for userId in analysislib.userIds:
         print("User Id: %d"%userId, "number of actions: %d"%analysislib.userTotalActionCount[userId],
               "dependencies: ", analysislib.getUserDependency(userId).userDependency)
-        print(analysislib.userIndependentActionCount[userId])
-        print(analysislib.userTotalActionCount[userId])
+        # print(analysislib.userIndependentActionCount[userId])
+        # print(analysislib.userTotalActionCount[userId])
         print(analysislib.userHourlyActionRate[userId])
+        print(analysislib.getUserHourlyActionRate(userId[0]))

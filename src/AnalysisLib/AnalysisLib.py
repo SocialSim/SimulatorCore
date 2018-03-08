@@ -1,12 +1,14 @@
-from common.const import *
-import common.argparser as argparser
 import numpy as np
-from collections import deque
 import copy
+import json
+import pickle
+import common.analysisArgParser as argParser
 
-from Dependency.ObjectPreference import ObjectPreference
-from Dependency.HourlyActionRate import HourlyActionRate
-from Dependency.UserDependency import UserDependency
+from collections import deque
+from common.const import *
+from Dependency.ObjectPreference import *
+from Dependency.HourlyActionRate import *
+from Dependency.UserDependency import *
 
 
 class AnalysisLib:
@@ -57,6 +59,8 @@ class AnalysisLib:
         #Update the userHourActionRate and userObjectPreference
         self.summarizeUserDistributions()
 
+        self.storeStatistics()
+
 
     def firstPass(self):
         '''
@@ -64,7 +68,7 @@ class AnalysisLib:
         Will clean the dependencies, and do a seconde pass to update the independent actions
         :return:
         '''
-        with open(DATAPATH + argparser.sargs.dataset, "r") as file:
+        with open(DATAPATH + argParser.sargs.dataset, "r") as file:
             for line in file:
                 if not line:
                     break
@@ -108,7 +112,7 @@ class AnalysisLib:
         '''
         self.dependencyWindow.clear()
         self.userIndependentActionCount = copy.deepcopy(self.userTotalActionCount)
-        with open(DATAPATH + "/test.txt", "r") as file:
+        with open(DATAPATH + argParser.sargs.dataset, "r") as file:
             for line in file:
                 if not line:
                     break
@@ -362,6 +366,59 @@ class AnalysisLib:
 
     def getUserDependentActions(self, userID):
         return None
+
+    def storeStatistics(self):
+        self.checkStatFolder()
+        self.storeUserID()
+        self.storeObjID()
+        self.storeUserActionRate()
+        self.storeUserObjectPreference()
+        self.storeUserDependency()
+
+    def checkStatFolder(self):
+        if not os.path.exists(STAT_PATH):
+            os.makedirs(STAT_PATH)
+
+    def storeUserID(self):
+        pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
+
+    def storeObjID(self):
+        pickle.dump(self.objectIds, open(OBJ_ID_FILE,'w'))
+
+    def storeUserActionRate(self):
+        allActionRate = dict()
+        for userId in self.userIds:
+            actionRate = self.getUserHourlyActionRate(userId)
+            allActionRate[userId] = actionRate
+
+        newUserActionRate = self.getUserHourlyActionRate(-1)
+        allActionRate[-1] = newUserActionRate
+
+        pickle.dump(allActionRate, open(USER_ACTION_RATE_FILE,'w'))
+
+        # favorite_color = pickle.load( open( USER_ACTION_RATE_FILE, "rb" ) )
+
+    def storeUserObjectPreference(self):
+        allObjectPreference = dict()
+        for userId in self.userIds:
+            objectPreference = self.getUserObjectPreference(userId)
+            allObjectPreference[userId] = objectPreference
+
+        newUserObjectPreference = self.getUserObjectPreference(-1)
+        allObjectPreference[-1] = newUserObjectPreference
+
+        pickle.dump(allObjectPreference, open(OBJECT_PREFERENCE_FILE,'w'))
+
+    def storeUserDependency(self):
+        allUserDependency = dict()
+        for userId in self.userIds:
+            userDependency = self.getUserDependency(userId)
+            allUserDependency[userId] = userDependency
+
+        newUserDependency = self.getUserDependency(-1)
+        allUserDependency[-1] = newUserDependency
+
+        pickle.dump(allUserDependency, open(USER_DEPENDENCY_FILE,'w'))
 
 
 if __name__ == '__main__':

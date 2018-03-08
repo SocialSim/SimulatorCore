@@ -11,9 +11,20 @@ class HourlyActionRate():
         self.agentId = agentId
         self.activityLevel = activityLevel
         self.actionType = actionType
-        self.probs = probs
+        self.probs = list(probs)
 
         # Make sure probs is a proper distribution
         assert (round(sum(probs), 6), 1.0)
         assert (all(0.0 <= prob <= 1.0 for prob in probs))
         assert (len(probs) == 24)
+
+    def __str__(self):
+        return "{%s %s %s %s}" % (str(self.agentId), str(self.activityLevel), 
+                str(self.actionType), str(self.probs))
+
+def HourlyActionRateSerializer(obj):
+    if isinstance(obj, HourlyActionRate):
+        serial = str(obj)
+        return serial
+    else:
+        raise TypeError ("Type not serializable")

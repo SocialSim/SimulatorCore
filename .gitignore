@@ -45,3 +45,7 @@ Thumbs.db
 # private
 SocialSimEvaluationEngine
 *.result
+
+# statistics
+statistics
+*.json

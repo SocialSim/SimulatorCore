@@ -6,8 +6,19 @@ class ObjectPreference():
     def __init__(self, agentId, objectIds, probs):
         self.agentId = agentId
         self.objectIds = objectIds
-        self.probs = probs
+        self.probs = list(probs)
 
         assert (len(objectIds) == len(probs))
         assert (round(sum(probs), 6), 1.0)
         assert (all(0.0 <= prob <= 1.0 for prob in probs))
+
+    def __str__(self):
+        return "{%s %s %s}" % (str(self.agentId), str(self.objectIds), 
+                str(self.probs))
+
+def ObjectPreferenceSerialier(obj):
+    if isinstance(obj, ObjectPreference):
+        serial = str(obj)
+        return serial
+    else:
+        raise TypeError ("Type not serializable")

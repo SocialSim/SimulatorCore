@@ -1,9 +1,9 @@
-from AnalysisLib.AnalysisLib import AnalysisLib
+from StatProxy.StatProxy import StatProxy
 
 
 class AgentBuilder():
     '''
-    This class is responsible for building agent objects using AnalysisLib. For now, each user in the database is modeled by one separate agent instance. FUTURE IMPROVEMENT: users with homogenous behaviors are grouped into a single generic agent instance. For example, one generic agent class to handle all users who perform only 1 to 3 actions per months.
+    This class is responsible for building agent objects using StatProxy. For now, each user in the database is modeled by one separate agent instance. FUTURE IMPROVEMENT: users with homogenous behaviors are grouped into a single generic agent instance. For example, one generic agent class to handle all users who perform only 1 to 3 actions per months.
     '''
 
     def __init__(self, UserAgentModel=None, ObjectAgentModel=None):
@@ -14,7 +14,7 @@ class AgentBuilder():
 
         self.UserAgentModel = UserAgentModel
         self.ObjectAgentModel = ObjectAgentModel
-        self.analysisLib = AnalysisLib.getInstance()
+        self.statProxy= StatProxy.getInstance()
 
 
     def build(self):
@@ -24,8 +24,8 @@ class AgentBuilder():
         :return: a list of user agents and a list of object agents
         '''
 
-        # Ask AnalysisLib for a list of user IDs
-        userIds = self.analysisLib.getUserIds()
+        # Ask StatProxy for a list of user IDs
+        userIds = self.statProxy.getUserIds()
         userAgents = []
         
         for userId in userIds:
@@ -38,8 +38,8 @@ class AgentBuilder():
             userAgent = self.UserAgentModel(userId)
             userAgents.append(userAgent)
 
-        # Ask AnalysisLib for a list of object IDs
-        objectIds = self.analysisLib.getObjectIds() #getObjectIds()
+        # Ask StatProxy for a list of object IDs
+        objectIds = self.statProxy.getObjectIds() #getObjectIds()
         objectAgents = []
 
         for objectId in objectIds:

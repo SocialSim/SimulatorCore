@@ -5,11 +5,14 @@ class HourlyActionRate():
 
     def __init__(self, agentId, activityLevel, actionType, probs):
         '''
-        :param probs: array of time-dependent rate of action. Example: the probability of agent <agentId> generating action <actionType> on some object at 8am is probs[7].
+        Data sturucure for user's type-specific hourly action distribution.
+        :param agentId: user Id
+        :param activityLevel: indicate how many actions this user perform for this type per day
+        :param actionType: the event Type
+        :param probs: probability distribution over each hour of one day
         '''
-
         self.agentId = agentId
-        self.activityLevel = activityLevel
+        self.activityLevel = int(activityLevel)
         self.actionType = actionType
         self.probs = list(probs)
 

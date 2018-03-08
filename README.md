@@ -33,3 +33,23 @@ Follow these steps when setup in Debian based OS:
 $ bash setup.sh
 $ source ~/.profile
 ```
+
+#### Simulation
+##### Offline Preparation
+To start simulation with SocialCube, you will need to first prepare your dataset and put it into data folder. Then type following to invoke offline AnalysisLib to generate statistics
+```
+$ python analyze.py --dataset {DATASET_NAME}
+```
+
+Please change {DATASET_NAME} to the name of dataset file.
+
+##### Online Simulation
+After you generate statistics from AnalysisLib, type following to start simulation
+```
+$ python run.py
+```
+
+If you are running on apollo5 with evaluation engine installed, run the following command to do an evaluation after simulation. Evaluation result will be stored in __evaluation.result__.
+```
+$ python run.py --evaluation
+```

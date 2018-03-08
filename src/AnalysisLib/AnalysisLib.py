@@ -112,7 +112,7 @@ class AnalysisLib:
         '''
         self.dependencyWindow.clear()
         self.userIndependentActionCount = copy.deepcopy(self.userTotalActionCount)
-        with open(DATAPATH + "/test.txt", "r") as file:
+        with open(DATAPATH + argParser.sargs.dataset, "r") as file:
             for line in file:
                 if not line:
                     break

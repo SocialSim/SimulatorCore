@@ -62,6 +62,7 @@ class AnalysisLib:
         #Update the userHourActionRate and userObjectPreference
         self.summarizeUserDistributions()
 
+        #Store the calculated parameters
         self.storeStatistics()
 
 

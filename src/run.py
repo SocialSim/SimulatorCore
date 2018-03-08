@@ -19,7 +19,7 @@ def main():
     logger = logging.getLogger("main")
     
     logger.info("Init and config agent builder...")
-    agentBuilder = AgentBuilder(UserAgentModel=DependentUserAgent,
+    agentBuilder = AgentBuilder(UserAgentModel=SimpleUserAgent,
                                 ObjectAgentModel=SimpleObjectAgent)
     userAgents, objectAgents = agentBuilder.build()
 

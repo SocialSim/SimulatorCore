@@ -1,6 +1,8 @@
 import numpy as np
 import copy
 import json
+import pickle
+import common.analysisArgParser as argParser
 
 from collections import deque
 from common.const import *
@@ -66,7 +68,7 @@ class AnalysisLib:
         Will clean the dependencies, and do a seconde pass to update the independent actions
         :return:
         '''
-        with open(DATAPATH + "/test.txt", "r") as file:
+        with open(DATAPATH + argParser.sargs.dataset, "r") as file:
             for line in file:
                 if not line:
                     break
@@ -378,12 +380,10 @@ class AnalysisLib:
             os.makedirs(STAT_PATH)
 
     def storeUserID(self):
-        with open(USER_ID_FILE, 'w') as outfile:
-            json.dump(self.userIds, outfile)
+        pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
 
     def storeObjID(self):
-        with open(OBJ_ID_FILE, 'w') as outfile:
-            json.dump(self.objectIds, outfile)
+        pickle.dump(self.objectIds, open(OBJ_ID_FILE,'w'))
 
     def storeUserActionRate(self):
         allActionRate = dict()
@@ -394,8 +394,9 @@ class AnalysisLib:
         newUserActionRate = self.getUserHourlyActionRate(-1)
         allActionRate[-1] = newUserActionRate
 
-        with open(USER_ACTION_RATE_FILE, 'w') as outfile:
-            json.dump(allActionRate, outfile, default = HourlyActionRateSerializer)
+        pickle.dump(allActionRate, open(USER_ACTION_RATE_FILE,'w'))
+
+        # favorite_color = pickle.load( open( USER_ACTION_RATE_FILE, "rb" ) )
 
     def storeUserObjectPreference(self):
         allObjectPreference = dict()
@@ -406,8 +407,7 @@ class AnalysisLib:
         newUserObjectPreference = self.getUserObjectPreference(-1)
         allObjectPreference[-1] = newUserObjectPreference
 
-        with open(OBJECT_PREFERENCE_FILE, 'w') as outfile:
-            json.dump(allObjectPreference, outfile, default = ObjectPreferenceSerialier)
+        pickle.dump(allObjectPreference, open(OBJECT_PREFERENCE_FILE,'w'))
 
     def storeUserDependency(self):
         allUserDependency = dict()
@@ -418,8 +418,7 @@ class AnalysisLib:
         newUserDependency = self.getUserDependency(-1)
         allUserDependency[-1] = newUserDependency
 
-        with open(USER_DEPENDENCY_FILE, 'w') as outfile:
-            json.dump(allUserDependency, outfile, default = UserDependencySerializer)
+        pickle.dump(allUserDependency, open(USER_DEPENDENCY_FILE,'w'))
 
 
 if __name__ == '__main__':

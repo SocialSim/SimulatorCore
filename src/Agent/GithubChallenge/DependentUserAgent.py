@@ -1,6 +1,6 @@
 import random
 
-from AnalysisLib.AnalysisLib import AnalysisLib
+from StatProxy.StatProxy import StatProxy
 from BehaviorModel.SimpleBehaviorModel import SimpleBehaviorModel
 from BehaviorModel.DependentBehaviorModel import DependentBehaviorModel
 from Agent.Agent import Agent
@@ -13,7 +13,7 @@ class DependentUserAgent(SimpleUserAgent):
     according to
     (1) Independent behaviors
     (2) Dependent actions according to his dependency relationships
-    both of which were computed from the database using AnalysisLib.
+    both of which were computed from the database using StatProxy.
     '''
 
     def __init__(self, id):
@@ -23,16 +23,16 @@ class DependentUserAgent(SimpleUserAgent):
         self.build()
 
     def build(self):
-        '''Query AnalysisLib to get an ObjectPreference instance and a list of
+        '''Query StatProxy to get an ObjectPreference instance and a list of
         HourlyActionRate instances, as well as the userDependency
         relationships.'''
 
-        analysislib = AnalysisLib.getInstance()
-        self.hourlyActionRates = analysislib.getUserHourlyActionRate(
+        statProxy = StatProxy.getInstance()
+        self.hourlyActionRates = statProxy.getUserHourlyActionRate(
             self.id)
-        self.objectPreference = analysislib.getUserObjectPreference(
+        self.objectPreference = statProxy.getUserObjectPreference(
             self.id)
-        self.userDependency = analysislib.getUserDependency(self.id)
+        self.userDependency = statProxy.getUserDependency(self.id)
 
     def step(self, currentTime, unitTime):
         '''
@@ -48,7 +48,7 @@ class DependentUserAgent(SimpleUserAgent):
                                                          self.objectPreference,
                                                          currentTime, unitTime)
         dependentEvents = DependentBehaviorModel.evaluate(self.userDependency,
-                                                          1,  # Same as the dependency length as in Analysislib
+                                                          1,  # Same as the dependency length as in StatProxy
                                                           self.objectPreference,
                                                           currentTime, unitTime)
         events = independentEvents + dependentEvents

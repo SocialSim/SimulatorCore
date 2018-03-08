@@ -6,7 +6,7 @@ class Agent(object):
         pass
 
     def build(self):
-        '''Query AnalysisLib to get model attributes.'''
+        '''Query StatProxy to get model attributes.'''
         pass
 
     def step(self, currentTime, timeStep):

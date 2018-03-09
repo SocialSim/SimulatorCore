@@ -15,9 +15,9 @@ def evaluate(simulator):
     print type(simulator.getAllUserIDs())
     print topkUser[0]
     print simulator.getAllUserIDs()[0]
-    evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), False)
-    evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), True)
-    evaluationEngine.evaluateQuestion20(topkUser, True)
+    # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), False)
+    # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), True)
+    # evaluationEngine.evaluateQuestion20(topkUser, True)
     evaluationEngine.evaluateQuestion18(topkUser, True)
     evaluationEngine.evaluateQuestion29bc(topkUser, 5, True)
 

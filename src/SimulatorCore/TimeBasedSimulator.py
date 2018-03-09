@@ -49,6 +49,12 @@ class TimeBasedSimulator():
         for event in self.eventHistory:
             event.show()
 
+    def saveLog(self):
+        with open("simulated_events.txt", "w") as output:
+            for event in self.eventHistory:
+                output.write(str(event.getTimestamp()) + " " + str(event.getUserID()) + " " + str(event.getObjID())
+                             + " " + str(event.getEventType()) + "\n")
+
     def getCurrentTime(self):
         return self.currentTime
 

@@ -35,7 +35,7 @@ def main():
     simulator.run()
     end = time.time()
     logger.info("Simulation time: %f s"%(end - start))
-    simulator.showLog()
+    simulator.saveLog()
 
     if argparser.sargs.evaluation:
         logger.info("Evaluating...")

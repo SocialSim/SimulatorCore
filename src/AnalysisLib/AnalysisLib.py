@@ -139,7 +139,7 @@ class AnalysisLib:
         :param line: A line of input with format #Event format: (eventTime, objectId, userId)
         :return:
         '''
-        event = line.split(" ")
+        event = line.split(argParser.sargs.delim)
         eventTime = int(event[0])
         hour = int((eventTime / 3600) % 24)
         objectId = event[1]

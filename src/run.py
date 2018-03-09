@@ -7,7 +7,7 @@ from AgentBuilder.AgentBuilder import AgentBuilder
 from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
 from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
-
+import Evaluator.Evaluator as evaluator
 
 def main():
     argparser.parseArguments()
@@ -34,25 +34,7 @@ def main():
     simulator.showLog()
 
     if argparser.sargs.evaluation: 
-        evaluate(simulator)
-
-def evaluate(simulator):
-    from SocialSimEvaluationEngine.metrics.metrics.SocialSimEvaluationEngine import SocialSimEvaluationEngine
-    evaluationEngine = SocialSimEvaluationEngine()
-    for event in simulator.eventHistory:
-        evaluationEngine.push(event)
-
-    sys.stdout = open('evaluation.result', 'w')
-
-    evaluationEngine.evaluateQuestion18(simulator.getAllUserIDs())
-    evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs())
-    evaluationEngine.evaluateQuestion26a("GITHUB_PUSH")
-    evaluationEngine.evaluateQuestion26b(10)
-    evaluationEngine.evaluateQuestion27(10)
-    evaluationEngine.evaluateQuestion28Gini()
-    evaluationEngine.evaluateQuestion28Palma()
-    evaluationEngine.evaluateQuestion29bc(simulator.getAllUserIDs(), 10)
-    evaluationEngine.evaluateQuestion29('s')
+        evaluator.evaluate(simulator)
 
 if __name__ == "__main__":
     main()

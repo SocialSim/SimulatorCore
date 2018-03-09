@@ -1,4 +1,6 @@
 from StatProxy.StatProxy import StatProxy
+from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
+from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 
 
 class AgentBuilder():
@@ -14,7 +16,10 @@ class AgentBuilder():
 
         self.UserAgentModel = UserAgentModel
         self.ObjectAgentModel = ObjectAgentModel
-        self.statProxy= StatProxy.getInstance()
+        if UserAgentModel == SimpleUserAgent:
+            self.statProxy = StatProxy.getInstance(agentType="simple")
+        else:
+            self.statProxy = StatProxy.getInstance(agentType="dependent")
 
 
     def build(self):

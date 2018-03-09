@@ -22,7 +22,7 @@ class SimpleUserAgent(Agent):
     def build(self):
         '''Query StatProxy to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
         
-        statProxy = StatProxy.getInstance()
+        statProxy = StatProxy.getInstance(agentType="simple")
         self.hourlyActionRates = statProxy.getUserHourlyActionRate(
             self.id)
         self.objectPreference = statProxy.getUserObjectPreference(

@@ -49,3 +49,6 @@ SocialSimEvaluationEngine
 # statistics
 statistics
 *.json
+
+# rawdata
+data/201501

@@ -10,13 +10,13 @@ class StatProxy(object):
     _instance = None
 
     @staticmethod
-    def getInstance():
+    def getInstance(agentType):
         """ Static access method. """
         if StatProxy._instance is None:
-            StatProxy()
+            StatProxy(agentType)
         return StatProxy._instance
     
-    def __init__(self):
+    def __init__(self, agentType):
         if StatProxy._instance is not None:
             raise Exception("This class is a singleton!")
         else:
@@ -24,18 +24,22 @@ class StatProxy(object):
 
         self.allUserActionRate = None
         self.allObjectPreference = None
-        self.allUserDependency = None
         self.userIDs= None
         self.objIDs= None
 
-        self.retrieveStatistics()
+        if agentType == "dependent":
+            self.allUserDependency = None
 
-    def retrieveStatistics(self):
+        self.retrieveStatistics(agentType)
+
+    def retrieveStatistics(self, agentType):
         self.retrieveUserIDs()
         self.retrieveObjIDs()
         self.retrieveUserActionRate()
         self.retrieveObjectPreference()
-        self.retrieveUserDependency()
+
+        if agentType == "dependent":
+            self.retrieveUserDependency()
 
     def retrieveUserIDs(self):
         self.userIDs = pickle.load(open(USER_ID_FILE, "rb" ))
@@ -62,7 +66,7 @@ class StatProxy(object):
         '''
         :return: a list of HourlyActionRate instances, one for each actionType 
         '''
-        if userId in self.userIDs:
+        if userId in self.allUserActionRate:
             return self.allUserActionRate[userId]
         else:  #This is a new user, no record.
             return self.allUserActionRate[-1]
@@ -71,7 +75,7 @@ class StatProxy(object):
         '''
         :return: an ObjectPreference instance
         '''
-        if userId in self.userIDs:
+        if userId in self.allObjectPreference:
             return self.allObjectPreference[userId]
         else:  #This is a new user, no record.
             return self.allObjectPreference[-1]

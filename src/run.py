@@ -1,5 +1,6 @@
 import logging
 import sys
+import time
 
 import common.argparser as argparser
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
@@ -10,6 +11,8 @@ from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
 import Evaluator.Evaluator as evaluator
 
 def main():
+    start = time.time()
+
     argparser.parseArguments()
 
     logging.basicConfig(stream=sys.stderr,
@@ -30,8 +33,9 @@ def main():
 
     logger.info("Start simulation...")
     simulator.run()
-
-    simulator.showLog()
+    end = time.time()
+    logger.info("Simulation time: %f s"%(end - start))
+    # simulator.showLog()
 
     if argparser.sargs.evaluation: 
         evaluator.evaluate(simulator)

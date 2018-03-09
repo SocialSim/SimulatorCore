@@ -33,9 +33,11 @@ class SimpleBehaviorModel():
                 continue
             prob = hourlyActionRate.probs[currentTime % 24]
 
-            for count in range(dailyActivityLevel):
+            while dailyActivityLevel > 0:
+                if dailyActivityLevel < 1:
+                    prob *= dailyActivityLevel
                 if random.random() <= prob:  # He will adopt an action of this type
-                    agentId = hourlyActionRate.agentId
+                    agentId = objectPreference.agentId
                     objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
                     actionType = hourlyActionRate.actionType
                     event = Event(userID = agentId,
@@ -43,5 +45,7 @@ class SimpleBehaviorModel():
                         eventType = actionType,
                         timestamp = currentTime)
                     events.append(event)
+
+                dailyActivityLevel -= 1
 
         return events

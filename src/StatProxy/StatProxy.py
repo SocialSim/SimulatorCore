@@ -1,4 +1,5 @@
 import pickle
+import copy
 
 from common.const import *
 from Dependency.ObjectPreference import *
@@ -24,13 +25,28 @@ class StatProxy(object):
 
         self.allUserActionRate = None
         self.allObjectPreference = None
-        self.userIDs= None
-        self.objIDs= None
+        self.userIDs = None
+        self.objIDs = None
+        self.generalTypeActionRatio = {}
 
         if agentType == "dependent":
             self.allUserDependency = None
 
         self.retrieveStatistics(agentType)
+
+        self.setGeneralTypeActionRatio()
+
+    def setGeneralTypeActionRatio(self):
+        for eventTypeHourlyActionRate in self.allUserActionRate[-1]:
+            eventType = eventTypeHourlyActionRate.actionType
+            averageTypeActionCount = eventTypeHourlyActionRate.activityLevel
+            self.generalTypeActionRatio[eventType] = averageTypeActionCount
+
+        averageTotalActions = sum(self.generalTypeActionRatio.values())
+
+        if averageTotalActions > 0:
+            for eventType in self.generalTypeActionRatio:
+                self.generalTypeActionRatio[eventType] /= averageTotalActions
 
     def retrieveStatistics(self, agentType):
         self.retrieveUserIDs()

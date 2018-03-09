@@ -12,7 +12,7 @@ class HourlyActionRate():
         :param probs: probability distribution over each hour of one day
         '''
         self.agentId = agentId
-        self.activityLevel = int(activityLevel)
+        self.activityLevel = activityLevel
         self.actionType = actionType
         self.probs = list(probs)
 
@@ -24,6 +24,9 @@ class HourlyActionRate():
     def __str__(self):
         return "{%s %s %s %s}" % (str(self.agentId), str(self.activityLevel), 
                 str(self.actionType), str(self.probs))
+
+    def setActivityLevel(self, activityLevel):
+        self.activityLevel = activityLevel
 
 def HourlyActionRateSerializer(obj):
     if isinstance(obj, HourlyActionRate):

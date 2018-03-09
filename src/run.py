@@ -35,9 +35,10 @@ def main():
     simulator.run()
     end = time.time()
     logger.info("Simulation time: %f s"%(end - start))
-    # simulator.showLog()
+    simulator.showLog()
 
-    if argparser.sargs.evaluation: 
+    if argparser.sargs.evaluation:
+        logger.info("Evaluating...")
         evaluator.evaluate(simulator)
 
 if __name__ == "__main__":

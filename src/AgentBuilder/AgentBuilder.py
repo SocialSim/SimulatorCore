@@ -40,8 +40,9 @@ class AgentBuilder():
             # Instantiate new user agent instance of class UserAgentModel
             # TODO configure user agent model like setting top-k influential users + activity
             # TODO configure user behavior model
-            userAgent = self.UserAgentModel(userId)
-            userAgents.append(userAgent)
+            if userIds[userId] > 50:
+                userAgent = self.UserAgentModel(userId)
+                userAgents.append(userAgent)
 
         # Ask StatProxy for a list of object IDs
         objectIds = self.statProxy.getObjectIds() #getObjectIds()

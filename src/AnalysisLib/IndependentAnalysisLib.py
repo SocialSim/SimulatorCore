@@ -6,11 +6,12 @@ import time
 import json
 import pickle
 import common.analysisArgParser as argParser
+import matplotlib.pyplot as plt
 
 from Dependency.ObjectPreference import ObjectPreference
 from Dependency.HourlyActionRate import HourlyActionRate
 
-# FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/event_2015-01-18_24.txt"
+# FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/simulated_events.txt"
 # FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/100-compressed_event_2015-01-01.txt"
 
 class IndependentAnalysisLib:
@@ -29,7 +30,7 @@ class IndependentAnalysisLib:
         else:
             IndependentAnalysisLib._instance = self
 
-        self.activityThreshold = 10 #Users with activities over this threshold will be set as active users.
+        self.activityThreshold = 50 #Users with activities over this threshold will be set as active users.
         self.userIds = {} #Store the user IDs, and their number of total actions.
         self.objectIds = {} #Store the obj IDs, and their number of total actions.
         self.eventTypes = ["CommitCommentEvent", "CreateEvent", "DeleteEvent", "ForkEvent", "IssueCommentEvent",
@@ -37,6 +38,7 @@ class IndependentAnalysisLib:
                            "MemberEvent", "GollumEvent", "ReleaseEvent", "PullRequestReviewCommentEvent"]
         self.userObjectPreference = {}
         self.userHourlyActionRate = {} #Should only count the independent actions, specific to event types.
+        self.userTypeEventCount = {}
         self.generalTypeActionCount = {} # The general count of actions belonging to each type.
         self.generalTypeActionRatio = {}
         self.generalObjectPreference = {}
@@ -203,10 +205,11 @@ class IndependentAnalysisLib:
         :return:
         '''
         for userId in self.userHourlyActionRate:
+            self.userTypeEventCount[userId] = {}
             for eventType in self.eventTypes:
-                userTypeEventCount = self.userTypeEventCount(userId, eventType)
-                if userTypeEventCount > 0:
-                    self.userHourlyActionRate[userId][eventType] /= userTypeEventCount
+                self.userTypeEventCount[userId][eventType] = sum(self.userHourlyActionRate[userId][eventType])
+                if self.userTypeEventCount[userId][eventType] > 0:
+                    self.userHourlyActionRate[userId][eventType] /= self.userTypeEventCount[userId][eventType]
 
         for userId in self.userObjectPreference:
             for objectId in self.userObjectPreference[userId]:
@@ -247,7 +250,7 @@ class IndependentAnalysisLib:
         if userId in self.userHourlyActionRate:
             for eventType in self.eventTypes:
                 eventTypeHourlyActionRate = HourlyActionRate(
-                    userId, self.userTypeEventCount(userId, eventType), eventType,
+                    userId, self.userTypeEventCount[userId][eventType]/7, eventType,
                     self.userHourlyActionRate[userId][eventType]
                 )
                 userHourlyActionRate.append(eventTypeHourlyActionRate)
@@ -256,7 +259,7 @@ class IndependentAnalysisLib:
                 if userId in self.userIds:
                     typeActionCount = self.userIds[userId] * self.generalTypeActionRatio[eventType]
                 else:
-                    averageTypeActionCount = self.generalTypeActionCount[eventType] / len(self.userIds)
+                    averageTypeActionCount = self.generalTypeActionCount[eventType] / (len(self.userIds) * 7)
                     typeActionCount = averageTypeActionCount
                 eventTypeHourlyActionRate = HourlyActionRate(
                     userId, typeActionCount, eventType,
@@ -339,3 +342,12 @@ if __name__ == '__main__':
     #               independentAnalysisLib.userHourlyActionRate[userId][eventType])
     # for eventType in independentAnalysisLib.eventTypes:
     #     print(eventType, independentAnalysisLib.generalHourlyActionRate[eventType])
+
+    x = independentAnalysisLib.generalTypeActionRatio.keys()
+    y = independentAnalysisLib.generalTypeActionRatio.values()
+    fig = plt.bar(x, y)
+    plt.xlabel("Event Type")
+    plt.xticks(x, x, rotation=-90)
+    plt.ylabel("Proportion")
+    plt.title("Proportions of event types")
+    plt.show()

@@ -8,6 +8,7 @@ from AgentBuilder.AgentBuilder import AgentBuilder
 from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
 from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
+from common.const import *
 import Evaluator.Evaluator as evaluator
 
 def main():
@@ -29,7 +30,7 @@ def main():
     logger.info("Init and config simulation setting...")
     simulator = TimeBasedSimulator( userAgents=userAgents,
                                     objectAgents=objectAgents,
-                                    startTime=0, endTime=24, unitTime=1)
+                                    startTime=0, endTime=24*7, unitTime=1)
 
     logger.info("Start simulation...")
     simulator.run()
@@ -39,7 +40,8 @@ def main():
 
     if argparser.sargs.evaluation:
         logger.info("Evaluating...")
-        evaluator.evaluate(simulator)
+        groundTruthFile = DATAPATH + "event_2015-01-25_31.txt"
+        evaluator.evaluate(simulator, groundTruthFile)
 
 if __name__ == "__main__":
     main()

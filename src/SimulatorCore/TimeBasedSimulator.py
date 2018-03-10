@@ -2,6 +2,7 @@ import random
 
 from DependentEventLogger.DependentEventLogger import DependentEventLogger
 from common.event import Event
+from common.const import *
 
 
 class TimeBasedSimulator():
@@ -20,7 +21,7 @@ class TimeBasedSimulator():
         self.endTime = endTime
         self.unitTime = unitTime
         self.eventHistory = []
-        self.dependentEventLogger = DependentEventLogger.getInstance(100, self.startTime, self.unitTime)
+        self.dependentEventLogger = DependentEventLogger.getInstance(200, self.startTime, self.unitTime)
 
     def run(self):
         while self.currentTime < self.endTime:
@@ -50,9 +51,9 @@ class TimeBasedSimulator():
             event.show()
 
     def saveLog(self):
-        with open("simulated_events.txt", "w") as output:
+        with open(DATAPATH+"simulated_events.txt", "w") as output:
             for event in self.eventHistory:
-                output.write(str(event.getTimestamp()) + " " + str(event.getUserID()) + " " + str(event.getObjID())
+                output.write(str(event.getTimestamp()) + " " + str(event.getObjID()) + " " + str(event.getUserID())
                              + " " + str(event.getEventType()) + "\n")
 
     def getCurrentTime(self):

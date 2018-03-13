@@ -4,6 +4,7 @@ from collections import deque
 import copy
 import time
 import json
+import sys
 import pickle
 import common.analysisArgParser as argParser
 import matplotlib.pyplot as plt
@@ -24,11 +25,16 @@ class IndependentAnalysisLib:
             IndependentAnalysisLib()
         return IndependentAnalysisLib._instance
 
-    def __init__(self):
+    def __init__(self , fileName = None):
         if IndependentAnalysisLib._instance is not None:
             raise Exception("This class is a singleton!")
         else:
             IndependentAnalysisLib._instance = self
+
+        if fileName:
+            self.fileName = fileName
+        else:
+            self.fileName = DATAPATH + argParser.sargs.dataset
 
         self.activityThreshold = 50 #Users with activities over this threshold will be set as active users.
         self.userIds = {} #Store the user IDs, and their number of total actions.
@@ -66,7 +72,7 @@ class IndependentAnalysisLib:
         The first pass, we will only count the userIds, objIds, user activity levels.
         :return:
         '''
-        with open(DATAPATH + argParser.sargs.dataset, "r") as file:
+        with open(self.fileName, "r") as file:
             for line in file:
                 if not line:
                     break
@@ -93,7 +99,7 @@ class IndependentAnalysisLib:
         Note: We will not compute hourly action rate for inactive users.
         :return:
         '''
-        with open(DATAPATH + argParser.sargs.dataset, "r") as file:
+        with open(self.fileName, "r") as file:
             for line in file:
                 if not line:
                     break
@@ -250,7 +256,7 @@ class IndependentAnalysisLib:
         if userId in self.userHourlyActionRate:
             for eventType in self.eventTypes:
                 eventTypeHourlyActionRate = HourlyActionRate(
-                    userId, self.userTypeEventCount[userId][eventType]/7, eventType,
+                    userId, self.userTypeEventCount[userId][eventType]/31, eventType,
                     self.userHourlyActionRate[userId][eventType]
                 )
                 userHourlyActionRate.append(eventTypeHourlyActionRate)
@@ -259,7 +265,7 @@ class IndependentAnalysisLib:
                 if userId in self.userIds:
                     typeActionCount = self.userIds[userId] * self.generalTypeActionRatio[eventType]
                 else:
-                    averageTypeActionCount = self.generalTypeActionCount[eventType] / (len(self.userIds) * 7)
+                    averageTypeActionCount = self.generalTypeActionCount[eventType] / (len(self.userIds) * 31)
                     typeActionCount = averageTypeActionCount
                 eventTypeHourlyActionRate = HourlyActionRate(
                     userId, typeActionCount, eventType,
@@ -329,25 +335,85 @@ class IndependentAnalysisLib:
 
         pickle.dump(allObjectPreference, open(OBJECT_PREFERENCE_FILE,'w'))
 
+    def getMostActiveUser(self):
+        '''
+        Get the id of most active user.
+        :return:
+        '''
+        return max(self.userIds, key=self.userIds.get)
+
+    def plotGeneralHourlyDistribution(self):
+        '''
+        Function for plot the general general hourly activity distribution.
+        :return:
+        '''
+        x = np.arange(0, 24)
+        y = self.generalHourlyActionRate["PushEvent"]
+        fig = plt.bar(x, y)
+        plt.xlabel("Hour")
+        # plt.xticks(x, x, rotation=-90)
+        plt.ylabel("Proportion")
+        plt.title("General hourly action ditribution of PushEvent")
+        plt.show()
+
+    def plotGeneralTypeDistribution(self):
+        '''
+        Function for plot the general type distribution.
+        :return:
+        '''
+        x = self.generalTypeActionRatio.keys()
+        y = self.generalTypeActionRatio.values()
+        fig = plt.bar(x, y)
+        plt.tight_layout()
+        plt.xlabel("Event Type")
+        plt.xticks(x, x, rotation=-90)
+        plt.ylabel("Proportion")
+        plt.title("General action type distribution")
+        plt.show()
+
+    def plotUserHourlyDistribution(self, userId):
+        '''
+        Plot the hourly activity distribution for given user.
+        :return:
+        '''
+        x = np.arange(0, 24)
+        y = self.userHourlyActionRate[userId]["PushEvent"]
+        fig = plt.bar(x, y)
+        plt.xlabel("Hour")
+        # plt.xticks(x, x, rotation=-90)
+        plt.ylabel("Proportion")
+        plt.title("Hourly action distribution of PushEvent for user: %s"%userId)
+        plt.show()
+
+    def plotUserTypeDistribution(self, userId):
+        '''
+        Plot the type activity distribution for given user.
+        :param userId:
+        :return:
+        '''
+        x = self.userTypeEventCount[userId].keys()
+        y = self.userTypeEventCount[userId].values()
+        totalCount = self.userIds[userId]  #total num of actions
+        if totalCount > 0:
+            y = np.array(y)/totalCount
+        fig = plt.bar(x, y)
+        plt.tight_layout()
+        plt.xlabel("Event Type")
+        plt.xticks(x, x, rotation=-90)
+        plt.ylabel("Proportion")
+        plt.title("Action type distribution for user: %s"%userId)
+        plt.show()
+
 
 if __name__ == '__main__':
     start = time.time()
-    independentAnalysisLib = IndependentAnalysisLib()
+    fileName = sys.argv[1]
+    independentAnalysisLib = IndependentAnalysisLib(fileName)
     end = time.time()
     print("Analyze time: %f"%(end-start))
 
-    # for userId in independentAnalysisLib.userHourlyActionRate:
-    #     for eventType in independentAnalysisLib.eventTypes:
-    #         print("UserID: %s, EventType: %s, HourlyRate: "%(userId, eventType),
-    #               independentAnalysisLib.userHourlyActionRate[userId][eventType])
-    # for eventType in independentAnalysisLib.eventTypes:
-    #     print(eventType, independentAnalysisLib.generalHourlyActionRate[eventType])
-
-    x = independentAnalysisLib.generalTypeActionRatio.keys()
-    y = independentAnalysisLib.generalTypeActionRatio.values()
-    fig = plt.bar(x, y)
-    plt.xlabel("Event Type")
-    plt.xticks(x, x, rotation=-90)
-    plt.ylabel("Proportion")
-    plt.title("Proportions of event types")
-    plt.show()
+    independentAnalysisLib.plotGeneralHourlyDistribution()
+    independentAnalysisLib.plotGeneralTypeDistribution()
+    mostActiveuser = independentAnalysisLib.getMostActiveUser()
+    independentAnalysisLib.plotUserHourlyDistribution(mostActiveuser)
+    independentAnalysisLib.plotUserTypeDistribution(mostActiveuser)

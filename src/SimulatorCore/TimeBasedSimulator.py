@@ -21,7 +21,7 @@ class TimeBasedSimulator():
         self.endTime = endTime
         self.unitTime = unitTime
         self.eventHistory = []
-        self.dependentEventLogger = DependentEventLogger.getInstance(200, self.startTime, self.unitTime)
+        # self.dependentEventLogger = DependentEventLogger.getInstance(200, self.startTime, self.unitTime)
 
     def run(self):
         while self.currentTime < self.endTime:
@@ -30,11 +30,11 @@ class TimeBasedSimulator():
 
     def step(self):
         random.shuffle(self.userAgents)
-        self.dependentEventLogger.step()
+        # self.dependentEventLogger.step()
 
         for agent in self.userAgents:
             events = agent.step(self.currentTime, self.unitTime)
-            self.logEvents(events)
+            # self.logEvents(events)
             self.eventHistory += events
 
     def logEvents(self, events):
@@ -51,7 +51,7 @@ class TimeBasedSimulator():
             event.show()
 
     def saveLog(self):
-        with open(DATAPATH+"simulated_events.txt", "w") as output:
+        with open(DATAPATH+"simulated_events_2015-02.txt", "w") as output:
             for event in self.eventHistory:
                 output.write(str(event.getTimestamp()) + " " + str(event.getObjID()) + " " + str(event.getUserID())
                              + " " + str(event.getEventType()) + "\n")

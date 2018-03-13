@@ -27,10 +27,10 @@ def readJson(filename):
 if __name__ == '__main__':
 
     count = 0
-    with open(DATAPATH + "event_2015-01-25_31.txt", "w") as output:
-        for day in range(20150125,20150132):
+    with open(DATAPATH + "event_2015-02.txt", "w") as output:
+        for day in range(20150201,20150229):
             for hour in range(24):
-                fileName = DATAPATH + "201501/" + str(day) + "/an_2015-01-" + \
+                fileName = DATAPATH + "Events/Anon/201502/" + str(day) + "/an_2015-02-" + \
                            str(day%100).zfill(2) + "-" + str(hour) + ".json.gz"
                 print(fileName)
                 eventList = readJson(fileName)

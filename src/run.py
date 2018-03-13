@@ -30,7 +30,7 @@ def main():
     logger.info("Init and config simulation setting...")
     simulator = TimeBasedSimulator( userAgents=userAgents,
                                     objectAgents=objectAgents,
-                                    startTime=0, endTime=24*7, unitTime=1)
+                                    startTime=0, endTime=24*28, unitTime=1)
 
     logger.info("Start simulation...")
     simulator.run()

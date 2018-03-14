@@ -1,8 +1,9 @@
 import sys
+import common.argparser as argparser
 from SimulatorCore.TimeBasedSimulator import TimeBasedSimulator
-from SocialSimEvaluationEngine.metrics.metrics.SocialSimEvaluationEngine import SocialSimEvaluationEngine
 
 def evaluate(simulator):
+    from SocialSimEvaluationEngine.metrics.metrics.SocialSimEvaluationEngine import SocialSimEvaluationEngine
     evaluationEngine = SocialSimEvaluationEngine()
     for event in simulator.eventHistory:
         evaluationEngine.push(event)

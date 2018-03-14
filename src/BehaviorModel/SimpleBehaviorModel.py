@@ -1,4 +1,5 @@
 import random
+import hashlib
 from scipy.stats import rv_discrete
 from common.event import Event
 
@@ -38,8 +39,13 @@ class SimpleBehaviorModel():
                     prob *= dailyActivityLevel
                 if random.random() <= prob:  # He will adopt an action of this type
                     agentId = objectPreference.agentId
-                    objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
                     actionType = hourlyActionRate.actionType
+                    if actionType == "CreateEvent":
+                        # Generate a random ID for the new object.
+                        objectName = agentId + str(currentTime) + str(random.randint(0, 100))
+                        objectId = str(hashlib.md5(objectName).hexdigest())
+                    else:
+                        objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
                     event = Event(userID = agentId,
                         objID = objectId,
                         eventType = actionType,

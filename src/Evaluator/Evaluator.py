@@ -33,8 +33,8 @@ def evaluate(simulator, groundTruthFile):
 
     sys.stdout = open('evaluation.result', 'w')
 
-    topkUser = evaluationEngine.evaluateQuestion27(10)
-    topkUser = list(topkUser.index.values)
+    # topkUser = evaluationEngine.evaluateQuestion27(10)
+    # topkUser = list(topkUser.index.values)
     # print type(topkUser)
     # print type(simulator.getAllUserIDs())
     # print topkUser[0]
@@ -42,13 +42,13 @@ def evaluate(simulator, groundTruthFile):
     # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), False)
     # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), True)
     # evaluationEngine.evaluateQuestion20(topkUser, True)
-    evaluationEngine.evaluateQuestion18(topkUser, False)
-    evaluationEngine.evaluateQuestion18(topkUser, True)
+    # evaluationEngine.evaluateQuestion18(topkUser, False)
+    # evaluationEngine.evaluateQuestion18(topkUser, True)
     # evaluationEngine.evaluateQuestion29bc(topkUser, 5, True)
 
     # evaluationEngine.evaluateQuestion18(simulator.getAllUserIDs(), True)
     # evaluationEngine.evaluateQuestion26a("GITHUB_PUSH")
-    evaluationEngine.evaluateQuestion26b(10)
+    evaluationEngine.evaluateQuestion26b(10, False)
     # evaluationEngine.evaluateQuestion28Gini()
     # evaluationEngine.evaluateQuestion28Palma()
     # evaluationEngine.evaluateQuestion29bc(simulator.getAllUserIDs(), 10)
@@ -74,17 +74,17 @@ def offlineEvaluate(SimulationFile, GroundTruthFile):
 
     # sys.stdout = open('evaluation.result', 'w')
 
-    topkUser = evaluationEngine.evaluateQuestion27(10)
-    topkUser = list(topkUser.index.values)
+    # topkUser = evaluationEngine.evaluateQuestion27(10)
+    # topkUser = list(topkUser.index.values)
     # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), False)
     # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), True)
     # evaluationEngine.evaluateQuestion20(topkUser, True)
-    evaluationEngine.evaluateQuestion18(topkUser, True)
+    # evaluationEngine.evaluateQuestion18(topkUser, True)
     # evaluationEngine.evaluateQuestion29bc(topkUser, 5, True)
 
     # evaluationEngine.evaluateQuestion18(simulator.getAllUserIDs(), True)
     # evaluationEngine.evaluateQuestion26a("PushEvent", True)
-    evaluationEngine.evaluateQuestion26b(10, True)
+    evaluationEngine.evaluateQuestion26b(10, False)
     # evaluationEngine.evaluateQuestion28Gini()
     # evaluationEngine.evaluateQuestion28Palma()
     # evaluationEngine.evaluateQuestion29bc(simulator.getAllUserIDs(), 10)
@@ -93,6 +93,6 @@ def offlineEvaluate(SimulationFile, GroundTruthFile):
     print("Evaluation time: %f s"%(end - start))
 
 if __name__ == "__main__":
-    SimulationFile = DATAPATH + "simulated_events.txt"
-    GroundTruthFile = DATAPATH + "event_2015-01-25_31.txt"
+    SimulationFile = DATAPATH + "simulated_events_2015-02.txt"
+    GroundTruthFile = DATAPATH + "event_2015-02.txt"
     offlineEvaluate(SimulationFile, GroundTruthFile)

@@ -41,6 +41,14 @@ class SimpleUserAgent(Agent):
                                               self.objectPreference,
                                               currentTime, unitTime)
 
+        for event in events: # Update the objectPreference for create and delete event.
+            eventType = event.getEventType()
+            objectId = event.getObjID()
+            if eventType == "CreateEvent":
+                self.objectPreference.addObject(objectId)
+            elif eventType == "DeleteEvent":
+                self.objectPreference.deleteObject(objectId)
+
         return events
 
     def next(self, currentTime):

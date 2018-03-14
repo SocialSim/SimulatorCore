@@ -1,3 +1,5 @@
+import numpy as np
+
 class ObjectPreference():
     '''
     A simple data structure to hold an agent's preference over the objects she touches.
@@ -15,6 +17,18 @@ class ObjectPreference():
     def __str__(self):
         return "{%s %s %s}" % (str(self.agentId), str(self.objectIds), 
                 str(self.probs))
+
+    def addObject(self, objectId):
+        self.objectIds.append(objectId)
+        self.probs.append(min(self.probs))
+        self.probs = list(np.array(self.probs) / (1 + min(self.probs)))
+
+    def deleteObject(self, objectId):
+        index = self.objectIds.index(objectId)
+        prob = self.probs[index]
+        self.objectIds.pop(index)
+        self.probs.pop(index)
+        self.probs = list(np.array(self.probs) / (1 - prob))
 
 def ObjectPreferenceSerialier(obj):
     if isinstance(obj, ObjectPreference):

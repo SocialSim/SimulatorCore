@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from Dependency.ObjectPreference import ObjectPreference
 from Dependency.HourlyActionRate import HourlyActionRate
 
-# FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/simulated_events.txt"
+# FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/simulated_events_2015-02.txt"
 # FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/100-compressed_event_2015-01-01.txt"
 
 class IndependentAnalysisLib:
@@ -131,7 +131,10 @@ class IndependentAnalysisLib:
         '''
         event = line.split(" ")
         eventTime = int(event[0])
-        hour = int((eventTime / 3600) % 24)
+        if eventTime < 3600:
+            hour = eventTime % 24
+        else:
+            hour = int((eventTime / 3600) % 24)
         objectId = event[1]
         userId = event[2]
         eventType = event[3]
@@ -394,13 +397,13 @@ class IndependentAnalysisLib:
         x = self.userTypeEventCount[userId].keys()
         y = self.userTypeEventCount[userId].values()
         totalCount = self.userIds[userId]  #total num of actions
-        if totalCount > 0:
-            y = np.array(y)/totalCount
+        # if totalCount > 0:
+        #     y = np.array(y)/totalCount
         fig = plt.bar(x, y)
         plt.tight_layout()
         plt.xlabel("Event Type")
         plt.xticks(x, x, rotation=-90)
-        plt.ylabel("Proportion")
+        plt.ylabel("Count")
         plt.title("Action type distribution for user: %s"%userId)
         plt.show()
 
@@ -412,8 +415,11 @@ if __name__ == '__main__':
     end = time.time()
     print("Analyze time: %f"%(end-start))
 
-    independentAnalysisLib.plotGeneralHourlyDistribution()
-    independentAnalysisLib.plotGeneralTypeDistribution()
-    mostActiveuser = independentAnalysisLib.getMostActiveUser()
+    # mostActiveuser = independentAnalysisLib.getMostActiveUser()
+    # print("Number of users: %d"%len(independentAnalysisLib.userIds.keys()))
+    # print("Number of objects: %d"%len(independentAnalysisLib.objectIds.keys()))
+    # print(independentAnalysisLib.generalTypeActionCount)
+    mostActiveuser = "mGzHxRUb6V36nyFJgEXPeQ"
+    # mostActiveuser = "YyAXRlZYVhUlbHCublQjzg"
     independentAnalysisLib.plotUserHourlyDistribution(mostActiveuser)
-    independentAnalysisLib.plotUserTypeDistribution(mostActiveuser)
+    # independentAnalysisLib.plotUserTypeDistribution(mostActiveuser)

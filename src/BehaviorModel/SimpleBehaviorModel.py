@@ -1,5 +1,6 @@
 import random
 import hashlib
+import numpy as np
 from scipy.stats import rv_discrete
 from common.event import Event
 
@@ -22,12 +23,16 @@ class SimpleBehaviorModel():
 
         events = []
         
-        objectIndexes = [i for i in range(len(objectPreference.objectIds))]
-        rv = rv_discrete(
-            values=(objectIndexes, objectPreference.probs))
+        objectIndexes = np.arange(len(objectPreference.getObjectIds()))
+        probs = objectPreference.getProbs()
+        agentId = objectPreference.getAgentId()
+        objectIds = objectPreference.getObjectIds()
+        rv = rv_discrete(values=(objectIndexes, probs))
 
         for hourlyActionRate in hourlyActionRates:  #Consider each type of actions independently
-            dailyActivityLevel = hourlyActionRate.activityLevel # How many actions of this type this user may take per day?
+
+            actionType = hourlyActionRate.getaActionType()
+            dailyActivityLevel = int(round(hourlyActionRate.getActivityLevel())) # How many actions of this type this user may take per day?
             if sum(hourlyActionRate.probs) == 0: #No record on this type of actions.
                 continue
             if dailyActivityLevel == 0:
@@ -38,14 +43,12 @@ class SimpleBehaviorModel():
                 if dailyActivityLevel < 1:
                     prob *= dailyActivityLevel
                 if random.random() <= prob:  # He will adopt an action of this type
-                    agentId = objectPreference.agentId
-                    actionType = hourlyActionRate.actionType
                     if actionType == "CreateEvent":
                         # Generate a random ID for the new object.
                         objectName = agentId + str(currentTime) + str(random.randint(0, 100))
                         objectId = str(hashlib.md5(objectName).hexdigest())
                     else:
-                        objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
+                        objectId = objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
                     event = Event(userID = agentId,
                         objID = objectId,
                         eventType = actionType,

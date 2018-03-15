@@ -39,7 +39,7 @@ class StatProxy(object):
     def setGeneralTypeActionRatio(self):
         for eventTypeHourlyActionRate in self.allUserActionRate[-1]:
             eventType = eventTypeHourlyActionRate.actionType
-            averageTypeActionCount = eventTypeHourlyActionRate.activityLevel
+            averageTypeActionCount = eventTypeHourlyActionRate.dailyActivityLevel
             self.generalTypeActionRatio[eventType] = averageTypeActionCount
 
         averageTotalActions = sum(self.generalTypeActionRatio.values())

@@ -28,7 +28,17 @@ class ObjectPreference():
         prob = self.probs[index]
         self.objectIds.pop(index)
         self.probs.pop(index)
-        self.probs = list(np.array(self.probs) / (1 - prob))
+        if prob < 1:
+            self.probs = list(np.array(self.probs) / (1 - prob))
+
+    def getAgentId(self):
+        return self.agentId
+
+    def getObjectIds(self):
+        return self.objectIds
+
+    def getProbs(self):
+        return self.probs
 
 def ObjectPreferenceSerialier(obj):
     if isinstance(obj, ObjectPreference):

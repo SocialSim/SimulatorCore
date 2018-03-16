@@ -12,7 +12,7 @@ def eventSplit(line):
     :return:
     '''
     event = line.split(" ")
-    eventTime = int(event[0])
+    eventTime = event[0]
     objectId = event[1]
     userId = event[2]
     eventType = event[3]
@@ -75,7 +75,9 @@ def offlineEvaluate(SimulationFile, GroundTruthFile):
     # sys.stdout = open('evaluation.result', 'w')
 
     # topkUser = evaluationEngine.evaluateQuestion27(10)
+    # topkUser = evaluationEngine.evaluateQuestion26b(10, plot=True)
     # topkUser = list(topkUser.index.values)
+    topkUser = ["mGzHxRUb6V36nyFJgEXPeQ"]
     # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), False)
     # evaluationEngine.evaluateQuestion20(simulator.getAllUserIDs(), True)
     # evaluationEngine.evaluateQuestion20(topkUser, True)
@@ -84,15 +86,15 @@ def offlineEvaluate(SimulationFile, GroundTruthFile):
 
     # evaluationEngine.evaluateQuestion18(simulator.getAllUserIDs(), True)
     # evaluationEngine.evaluateQuestion26a("PushEvent", True)
-    evaluationEngine.evaluateQuestion26b(10, False)
-    # evaluationEngine.evaluateQuestion28Gini()
-    # evaluationEngine.evaluateQuestion28Palma()
-    # evaluationEngine.evaluateQuestion29bc(simulator.getAllUserIDs(), 10)
+    # evaluationEngine.evaluateQuestion26b(10, True)
+    # evaluationEngine.evaluateQuestion28Gini(True)
+    # evaluationEngine.evaluateQuestion28Palma(True)
+    evaluationEngine.evaluateQuestion29bc(topkUser, 10)
     # evaluationEngine.evaluateQuestion29('s')
     end = time.time()
     print("Evaluation time: %f s"%(end - start))
 
 if __name__ == "__main__":
-    SimulationFile = DATAPATH + "simulated_events_2015-02.txt"
-    GroundTruthFile = DATAPATH + "event_2015-02.txt"
+    SimulationFile = DATAPATH + "simulated_events_2015-01-02.txt"
+    GroundTruthFile = DATAPATH + "event_2015-01-02.txt"
     offlineEvaluate(SimulationFile, GroundTruthFile)

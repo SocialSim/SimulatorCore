@@ -30,36 +30,48 @@ class SimulationTime(object):
         os.environ['TZ'] = "UTC"
         time.tzset()
 
-    def getIsoTime(self, timeShift=0):
+    @staticmethod
+    def getIsoTime(timeShift=0):
         '''
         Convert the current time structure into a string of ISO format.
         You can show the time with a given shift in second, used in the simulation stage to print the time of event.
         :return: A string in the ISO time format.
         '''
-        timeTuple = (self.year, self.mon, self.day, self.hour, self.min, self.sec, 0, 0, -1)
+        timeTuple = (SimulationTime._instance.year,
+                     SimulationTime._instance.mon,
+                     SimulationTime._instance.day,
+                     SimulationTime._instance.hour,
+                     SimulationTime._instance.min,
+                     SimulationTime._instance.sec, 0, 0, -1)
         timeStep = time.mktime(timeTuple)
         timeStep += timeShift
         timeTuple = time.gmtime(timeStep)
         iso_time = time.strftime("%Y-%m-%dT%H:%M:%SZ", timeTuple)
         return(iso_time)
 
-    def getYear(self):
-        return self.year
+    @staticmethod
+    def getYear():
+        return SimulationTime._instance.year
 
-    def getMonth(self):
-        return self.mon
+    @staticmethod
+    def getMonth():
+        return SimulationTime._instance.mon
 
-    def getDay(self):
-        return self.day
+    @staticmethod
+    def getDay():
+        return SimulationTime._instance.day
 
-    def getHour(self):
-        return self.hour
+    @staticmethod
+    def getHour():
+        return SimulationTime._instance.hour
 
-    def getMin(self):
-        return self.min
+    @staticmethod
+    def getMin():
+        return SimulationTime._instance.min
 
-    def getSec(self):
-        return self.sec
+    @staticmethod
+    def getSec():
+        return SimulationTime._instance.sec
 
     @staticmethod
     def getHourFromIso(iso_time):
@@ -71,7 +83,8 @@ class SimulationTime(object):
         timeArray = time.strptime(iso_time, "%Y-%m-%dT%H:%M:%SZ")
         return timeArray.tm_hour
 
-    def updateTime(self, yearShift=None, monthShift=None, dayShift=None,
+    @staticmethod
+    def updateTime(yearShift=None, monthShift=None, dayShift=None,
                    hourShift=None, minuteShift=None, secondShift=None):
         '''
         Update the current time.
@@ -108,30 +121,35 @@ class SimulationTime(object):
         if secondShift:
             shift += secondShift
 
-        timeTuple = (self.year, self.mon, self.day, self.hour, self.min, self.sec, 0, 0, -1)
+        timeTuple = (SimulationTime._instance.year,
+                     SimulationTime._instance.mon,
+                     SimulationTime._instance.day,
+                     SimulationTime._instance.hour,
+                     SimulationTime._instance.min,
+                     SimulationTime._instance.sec, 0, 0, -1)
         timeTuple = time.struct_time(timeTuple)
         timeStep = time.mktime(timeTuple)
         timeStep += shift
         timeTuple = time.gmtime(timeStep)
 
-        self.year = timeTuple.tm_year
-        self.mon = timeTuple.tm_mon
-        self.day = timeTuple.tm_mday
-        self.hour = timeTuple.tm_hour
-        self.min = timeTuple.tm_min
-        self.sec = timeTuple.tm_sec
+        SimulationTime._instance.year = timeTuple.tm_year
+        SimulationTime._instance.mon = timeTuple.tm_mon
+        SimulationTime._instance.day = timeTuple.tm_mday
+        SimulationTime._instance.hour = timeTuple.tm_hour
+        SimulationTime._instance.min = timeTuple.tm_min
+        SimulationTime._instance.sec = timeTuple.tm_sec
 
 
 if __name__ == '__main__':
-    simulationTime = SimulationTime.getInstance(year=2016,
+    SimulationTime.getInstance(year=2016,
                                month=5,
                                day=6,
                                hour=3,
                                minute=5,
                                second=6)
-    print simulationTime.getIsoTime()
-    simulationTime.updateTime(dayShift= 4, hourShift=13)
-    timestr = simulationTime.getIsoTime()
+    print SimulationTime.getIsoTime()
+    SimulationTime.updateTime(dayShift= 4, hourShift=13)
+    timestr = SimulationTime.getIsoTime()
     print SimulationTime.getHourFromIso(timestr)
 
 

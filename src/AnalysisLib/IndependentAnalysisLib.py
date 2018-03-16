@@ -11,11 +11,10 @@ import matplotlib.pyplot as plt
 
 from Dependency.ObjectPreference import ObjectPreference
 from Dependency.HourlyActionRate import HourlyActionRate
+from common.simulationTime import SimulationTime
 
-# FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/simulated_events_2015-02.txt"
-# FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/100-compressed_event_2015-01-01.txt"
 
-class IndependentAnalysisLib:
+class IndependentAnalysisLib(object):
     _instance = None
 
     @staticmethod
@@ -27,12 +26,12 @@ class IndependentAnalysisLib:
 
     def __init__(self , fileName = None):
         if IndependentAnalysisLib._instance is not None:
-            raise Exception("This class is a singleton!")
+            raise Exception("IndependentAnalysisLib class is a singleton!")
         else:
             IndependentAnalysisLib._instance = self
 
         if fileName:
-            self.fileName = fileName
+            self.fileName = DATAPATH + fileName
         else:
             self.fileName = DATAPATH + argParser.sargs.dataset
 
@@ -48,7 +47,7 @@ class IndependentAnalysisLib:
         self.generalTypeActionCount = {} # The general count of actions belonging to each type.
         self.generalTypeActionRatio = {}
         self.generalObjectPreference = {}
-        self.generalHourlyActionRate = self.initializeHourlyDistributions()
+        self.generalHourlyActionRate = self.initHourlyDistributions()
 
 
         #The first pass, we determine user hourly action rate
@@ -130,17 +129,14 @@ class IndependentAnalysisLib:
         :return:
         '''
         event = line.split(" ")
-        eventTime = int(event[0])
-        if eventTime < 3600:
-            hour = eventTime % 24
-        else:
-            hour = int((eventTime / 3600) % 24)
+        eventTime = event[0]
+        hour = SimulationTime.getHourFromIso(eventTime)
         objectId = event[1]
         userId = event[2]
         eventType = event[3]
         return eventTime, hour, objectId, userId, eventType
 
-    def initializeHourlyDistributions(self):
+    def initHourlyDistributions(self):
         '''
         Initialize the hourly action distribution
         :return:
@@ -171,7 +167,7 @@ class IndependentAnalysisLib:
         :return:
         '''
         if userType == "new":
-            self.userHourlyActionRate[userId] = self.initializeHourlyDistributions()
+            self.userHourlyActionRate[userId] = self.initHourlyDistributions()
 
         self.userHourlyActionRate[userId][eventType][hour] += 1
 
@@ -230,9 +226,6 @@ class IndependentAnalysisLib:
         :return: Return if this user is an active user, cause we only the influence of active users.
         '''
         return self.userIds[userId] > self.activityThreshold
-
-    def hour(self, eventTime):
-        return int((eventTime / 3600) % 24)
 
     def userTypeEventCount(self, userId, eventType):
         return sum(self.userHourlyActionRate[userId][eventType])
@@ -419,7 +412,7 @@ if __name__ == '__main__':
     # print("Number of users: %d"%len(independentAnalysisLib.userIds.keys()))
     # print("Number of objects: %d"%len(independentAnalysisLib.objectIds.keys()))
     # print(independentAnalysisLib.generalTypeActionCount)
-    mostActiveuser = "mGzHxRUb6V36nyFJgEXPeQ"
+    # mostActiveuser = "mGzHxRUb6V36nyFJgEXPeQ"
     # mostActiveuser = "YyAXRlZYVhUlbHCublQjzg"
-    independentAnalysisLib.plotUserHourlyDistribution(mostActiveuser)
+    # independentAnalysisLib.plotUserHourlyDistribution(mostActiveuser)
     # independentAnalysisLib.plotUserTypeDistribution(mostActiveuser)

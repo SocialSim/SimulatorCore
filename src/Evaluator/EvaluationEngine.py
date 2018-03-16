@@ -39,7 +39,7 @@ class EvaluationEngine(object):
         userId = event.getUserID() 
         objId = event.getObjID() 
         eventType = event.getEventType() 
-        timestamp = event.getTimestamp() 
+        timestamp = event.getEventTime()
 
         df = (str(self.onlineSimulationCount), [self.onlineSimulationCount, timestamp, eventType, userId, objId])
         self.onlineSimulationDataFrame.append(df)

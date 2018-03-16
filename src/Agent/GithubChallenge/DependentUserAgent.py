@@ -45,8 +45,7 @@ class DependentUserAgent(SimpleUserAgent):
 
         # FIXME what if simulation time DOES NOT advance every one hour
         independentEvents = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
-                                                         self.objectPreference,
-                                                         currentTime, unitTime)
+                                                         self.objectPreference)
         dependentEvents = DependentBehaviorModel.evaluate(self.userDependency,
                                                           1,  # Same as the dependency length as in StatProxy
                                                           self.objectPreference,

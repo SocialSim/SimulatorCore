@@ -3,6 +3,7 @@ import hashlib
 import numpy as np
 from scipy.stats import rv_discrete
 from common.event import Event
+from common.simulationTime import SimulationTime
 
 
 class SimpleBehaviorModel():
@@ -11,7 +12,7 @@ class SimpleBehaviorModel():
         pass
 
     @staticmethod
-    def evaluate(hourlyActionRates, objectPreference, currentTime, unitTime):
+    def evaluate(hourlyActionRates, objectPreference):
         '''
         Decide user action performed on object by flipping a coin.
 
@@ -37,22 +38,26 @@ class SimpleBehaviorModel():
                 continue
             if dailyActivityLevel == 0:
                 continue
-            prob = hourlyActionRate.probs[currentTime % 24]
+            currentHour = SimulationTime.getHour()
+            prob = hourlyActionRate.probs[currentHour]
 
             while dailyActivityLevel > 0:
                 if dailyActivityLevel < 1:
                     prob *= dailyActivityLevel
                 if random.random() <= prob:  # He will adopt an action of this type
+                    currentTime = SimulationTime.getIsoTime()
                     if actionType == "CreateEvent":
                         # Generate a random ID for the new object.
                         objectName = agentId + str(currentTime) + str(random.randint(0, 100))
-                        objectId = str(hashlib.md5(objectName).hexdigest())
+                        objectId = str(hashlib.md5(objectName).hexdigest())[0:22]
                     else:
                         objectId = objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
+                    timeShift = np.random.randint(0, 3600)
+                    eventTime = SimulationTime.getIsoTime(timeShift)
                     event = Event(userID = agentId,
                         objID = objectId,
                         eventType = actionType,
-                        timestamp = currentTime)
+                        timestamp = eventTime)
                     events.append(event)
 
                 dailyActivityLevel -= 1

@@ -9,6 +9,7 @@ from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
 from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
 from common.const import *
+from common.simulationTime import SimulationTime
 import Evaluator.Evaluator as evaluator
 
 def main():
@@ -28,9 +29,11 @@ def main():
     userAgents, objectAgents = agentBuilder.build()
 
     logger.info("Init and config simulation setting...")
+    SimulationTime.getInstance(year=2015, month=1, day=2, hour=0, minute=0, second=0)
     simulator = TimeBasedSimulator( userAgents=userAgents,
                                     objectAgents=objectAgents,
-                                    startTime=0, endTime=24*28, unitTime=1)
+                                    simulationLength=24,
+                                    unitTime="hour")
 
     logger.info("Start simulation...")
     simulator.run()

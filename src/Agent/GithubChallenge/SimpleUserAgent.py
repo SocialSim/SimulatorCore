@@ -28,7 +28,7 @@ class SimpleUserAgent(Agent):
         self.objectPreference = statProxy.getUserObjectPreference(
             self.id)
 
-    def step(self, currentTime, unitTime):
+    def step(self):
         '''
         The step() function is used by TimeBasedSimulator. This function is invoked at every time step in the simulation loop.
 
@@ -38,16 +38,16 @@ class SimpleUserAgent(Agent):
 
         # FIXME what if simulation time DOES NOT advance every one hour
         events = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
-                                              self.objectPreference,
-                                              currentTime, unitTime)
+                                              self.objectPreference)
 
-        for event in events: # Update the objectPreference for create and delete event.
-            eventType = event.getEventType()
-            objectId = event.getObjID()
-            if eventType == "CreateEvent":
-                self.objectPreference.addObject(objectId)
-            elif eventType == "DeleteEvent":
-                self.objectPreference.deleteObject(objectId)
+        # FIXME the current parameters are read from file, and can not be changed
+        # for event in events: # Update the objectPreference for create and delete event.
+        #     eventType = event.getEventType()
+        #     objectId = event.getObjID()
+        #     if eventType == "CreateEvent":
+        #         self.objectPreference.addObject(objectId)
+        #     elif eventType == "DeleteEvent":
+        #         self.objectPreference.deleteObject(objectId)
 
         return events
 

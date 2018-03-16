@@ -3,6 +3,7 @@ import random
 from DependentEventLogger.DependentEventLogger import DependentEventLogger
 from common.event import Event
 from common.const import *
+from common.simulationTime import SimulationTime
 
 
 class TimeBasedSimulator():
@@ -13,27 +14,30 @@ class TimeBasedSimulator():
     Time unit: hour
     '''
 
-    def __init__(self, userAgents, objectAgents, startTime, endTime, unitTime):
+    def __init__(self, userAgents, objectAgents, simulationLength, unitTime):
         self.userAgents = userAgents
         self.objectAgents = objectAgents
-        self.currentTime = startTime
-        self.startTime = startTime
-        self.endTime = endTime
+        self.simulationLength = simulationLength
         self.unitTime = unitTime
         self.eventHistory = []
         # self.dependentEventLogger = DependentEventLogger.getInstance(200, self.startTime, self.unitTime)
 
     def run(self):
-        while self.currentTime < self.endTime:
+        count = 0
+        while count < self.simulationLength:
             self.step()
-            self.currentTime += self.unitTime
+            count += 1
+            if self.unitTime == "hour":
+                SimulationTime.updateTime(hourShift=1)
+            else:
+                SimulationTime.updateTime(dayShift=1)
 
     def step(self):
         random.shuffle(self.userAgents)
         # self.dependentEventLogger.step()
 
         for agent in self.userAgents:
-            events = agent.step(self.currentTime, self.unitTime)
+            events = agent.step()
             # self.logEvents(events)
             self.eventHistory += events
 
@@ -41,7 +45,7 @@ class TimeBasedSimulator():
         for event in events:
             userId = event.getUserID()
             eventType = event.getEventType()
-            timeStamp = event.getTimestamp()
+            timeStamp = event.getEventTime()
             self.dependentEventLogger.logUserEventAtTime(userID = userId,
                     eventType = eventType,
                     timestamp = timeStamp)
@@ -51,13 +55,13 @@ class TimeBasedSimulator():
             event.show()
 
     def saveLog(self):
-        with open(DATAPATH+"simulated_events_2015-02.txt", "w") as output:
+        with open(DATAPATH+"simulated_events_2015-01-02.txt", "w") as output:
             for event in self.eventHistory:
-                output.write(str(event.getTimestamp()) + " " + str(event.getObjID()) + " " + str(event.getUserID())
+                output.write(str(event.getEventTime()) + " " + str(event.getObjID()) + " " + str(event.getUserID())
                              + " " + str(event.getEventType()) + "\n")
 
-    def getCurrentTime(self):
-        return self.currentTime
+    # def getCurrentTime(self):
+    #     return self.currentTime
 
     def getAllUserIDs(self):
         ids = list()

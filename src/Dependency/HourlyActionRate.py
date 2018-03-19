@@ -22,8 +22,11 @@ class HourlyActionRate():
         assert (len(probs) == 24)
 
     def __str__(self):
-        return "{%s %s %s %s}" % (str(self.agentId), str(self.activityLevel), 
-                str(self.actionType), str(self.probs))
+        result = "%s %s %s " % (str(self.agentId), str(self.activityLevel), 
+                str(self.actionType))
+        for prob in self.probs:
+            result += "%s " % prob
+        return result
 
 def HourlyActionRateSerializer(obj):
     if isinstance(obj, HourlyActionRate):

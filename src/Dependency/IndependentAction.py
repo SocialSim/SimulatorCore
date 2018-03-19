@@ -12,7 +12,7 @@ class IndependentAction():
         assert (0.0 <= prob <= 1.0)
 
     def __str__(self):
-        return "{%s %s %s %s}" % (str(self.agentId), str(self.actionType), 
+        return "%s %s %s %s" % (str(self.agentId), str(self.actionType), 
                 str(self.objectId), str(self.prob))
 
 def IndependentActionSerializer(obj):

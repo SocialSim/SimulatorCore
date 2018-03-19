@@ -4,7 +4,6 @@ from collections import deque
 import copy
 import time
 import json
-import pickle
 import common.analysisArgParser as argParser
 
 from Dependency.ObjectPreference import ObjectPreference
@@ -258,7 +257,7 @@ class IndependentAnalysisLib:
                 else:
                     averageTypeActionCount = self.generalTypeActionCount[eventType] / len(self.userIds)
                     typeActionCount = averageTypeActionCount
-                eventTypeHourlyActionRate = HourlyActionRate(
+                    eventTypeHourlyActionRate = HourlyActionRate(
                     userId, typeActionCount, eventType,
                     self.generalHourlyActionRate[eventType]
                 )
@@ -287,9 +286,13 @@ class IndependentAnalysisLib:
 
     def storeStatistics(self):
         self.checkStatFolder()
+        print "store user is"
         self.storeUserID()
+        print "store obj is"
         self.storeObjID()
+        print "store user action rate"
         self.storeUserActionRate()
+        print "store object preference"
         self.storeUserObjectPreference()
 
     def checkStatFolder(self):
@@ -297,10 +300,16 @@ class IndependentAnalysisLib:
             os.makedirs(STAT_PATH)
 
     def storeUserID(self):
-        pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
+        # pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
+        with open(USER_ID_FILE, 'w') as thefile:
+            for item in self.userIds:
+                  thefile.write("%s\n" % item)
 
     def storeObjID(self):
-        pickle.dump(self.objectIds, open(OBJ_ID_FILE,'w'))
+        # pickle.dump(self.objectIds, open(OBJ_ID_FILE,'w'))
+        with open(OBJ_ID_FILE, 'w') as thefile:
+            for item in self.objectIds:
+                  thefile.write("%s\n" % item)
 
     def storeUserActionRate(self):
         allActionRate = dict()
@@ -311,7 +320,13 @@ class IndependentAnalysisLib:
         newUserActionRate = self.getUserHourlyActionRate(-1)
         allActionRate[-1] = newUserActionRate
 
-        pickle.dump(allActionRate, open(USER_ACTION_RATE_FILE,'w'))
+        # pickle.dump(allActionRate, open(USER_ACTION_RATE_FILE,'w'))
+        
+        with open(USER_ACTION_RATE_FILE, 'w') as thefile:
+            for item in allActionRate:
+                thefile.write("%s %s\n" % (item, len(allActionRate[item])))
+                for actionRate in allActionRate[item]:
+                    thefile.write("%s\n" % actionRate)
 
         # favorite_color = pickle.load( open( USER_ACTION_RATE_FILE, "rb" ) )
 
@@ -324,7 +339,10 @@ class IndependentAnalysisLib:
         newUserObjectPreference = self.getUserObjectPreference(-1)
         allObjectPreference[-1] = newUserObjectPreference
 
-        pickle.dump(allObjectPreference, open(OBJECT_PREFERENCE_FILE,'w'))
+        # pickle.dump(allObjectPreference, open(OBJECT_PREFERENCE_FILE,'w'))
+        with open(OBJECT_PREFERENCE_FILE, 'w') as thefile:
+            for item in allObjectPreference:
+                thefile.write("%s" % (allObjectPreference[item]))
 
 
 if __name__ == '__main__':

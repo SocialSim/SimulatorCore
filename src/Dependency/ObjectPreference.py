@@ -13,8 +13,10 @@ class ObjectPreference():
         assert (all(0.0 <= prob <= 1.0 for prob in probs))
 
     def __str__(self):
-        return "{%s %s %s}" % (str(self.agentId), str(self.objectIds), 
-                str(self.probs))
+        result = "%s %s\n" % (str(self.agentId), str(len(self.objectIds)))
+        for i in range(0, len(self.objectIds)):
+            result += "%s %s\n" % (str(self.objectIds[i]), str(self.probs[i]))
+        return result
 
 def ObjectPreferenceSerialier(obj):
     if isinstance(obj, ObjectPreference):

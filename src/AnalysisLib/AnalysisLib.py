@@ -406,7 +406,11 @@ class AnalysisLib:
             os.makedirs(STAT_PATH)
 
     def storeUserID(self):
-        pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
+        # pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
+        print self.userIds
+        with open(USER_ID_FILE, 'w') as thefile:
+            for item in self.userIds:
+                  thefile.write("%s " % item)
 
     def storeObjID(self):
         pickle.dump(self.objectIds, open(OBJ_ID_FILE,'w'))

@@ -4,6 +4,8 @@ import numpy as np
 from scipy.stats import rv_discrete
 from common.event import Event
 from common.simulationTime import SimulationTime
+from common.const import *
+from common.discreteSample import sample
 
 
 class SimpleBehaviorModel():
@@ -12,7 +14,7 @@ class SimpleBehaviorModel():
         pass
 
     @staticmethod
-    def evaluate(hourlyActionRates, objectPreference):
+    def evaluate(hourlyActionRate, objectPreference, typeDistribution):
         '''
         Decide user action performed on object by flipping a coin.
 
@@ -23,43 +25,84 @@ class SimpleBehaviorModel():
         '''
 
         events = []
-        
-        objectIndexes = np.arange(len(objectPreference.getObjectIds()))
-        probs = objectPreference.getProbs()
+
         agentId = objectPreference.getAgentId()
+
         objectIds = objectPreference.getObjectIds()
-        rv = rv_discrete(values=(objectIndexes, probs))
+        objectProbs = objectPreference.getProbs()
+        objectIndexes = np.arange(len(objectIds))
+        object_rv = rv_discrete(values=(objectIndexes, objectProbs))
 
-        for hourlyActionRate in hourlyActionRates:  #Consider each type of actions independently
+        typeProbs = typeDistribution.probs
+        type_rv = rv_discrete(values=(TYPE_INDEX, typeProbs))
 
-            actionType = hourlyActionRate.getaActionType()
-            dailyActivityLevel = int(round(hourlyActionRate.getActivityLevel())) # How many actions of this type this user may take per day?
-            if sum(hourlyActionRate.probs) == 0: #No record on this type of actions.
-                continue
-            if dailyActivityLevel == 0:
-                continue
-            currentHour = SimulationTime.getHour()
-            prob = hourlyActionRate.probs[currentHour]
+        dailyActivityLevel = hourlyActionRate.dailyActivityLevel
 
-            while dailyActivityLevel > 0:
-                if dailyActivityLevel < 1:
-                    prob *= dailyActivityLevel
-                if random.random() <= prob:  # He will adopt an action of this type
-                    currentTime = SimulationTime.getIsoTime()
-                    if actionType == "CreateEvent":
-                        # Generate a random ID for the new object.
-                        objectName = agentId + str(currentTime) + str(random.randint(0, 100))
-                        objectId = str(hashlib.md5(objectName).hexdigest())[0:22]
-                    else:
-                        objectId = objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
-                    timeShift = np.random.randint(0, 3600)
-                    eventTime = SimulationTime.getIsoTime(timeShift)
-                    event = Event(userID = agentId,
-                        objID = objectId,
-                        eventType = actionType,
-                        timestamp = eventTime)
-                    events.append(event)
+        if sum(hourlyActionRate.probs) == 0:
+            return events
+        if dailyActivityLevel == 0:
+            return events
 
-                dailyActivityLevel -= 1
+        currentHour = SimulationTime.getHour()
+        prob = hourlyActionRate.probs[currentHour]
+
+        while dailyActivityLevel > 0:
+            if dailyActivityLevel < 1:
+                prob *= dailyActivityLevel
+            if random.random() <= prob:  # He will adopt an action
+                # currentTime = SimulationTime.getIsoTime()
+                actionType = EVENT_TYPEs[type_rv.rvs(size=1)[0]]
+                if actionType == "CreateEvent":
+                    # Generate a random ID for the new object.
+                    objectName = agentId + str(random.randint(0, 1000))
+                    objectId = str(hashlib.md5(objectName).hexdigest())[0:22]
+                else:
+                    objectId = objectIds[object_rv.rvs(size=1)[0]]  # Get 1 sample the distribution
+                timeShift = np.random.randint(0, 3600)
+                eventTime = SimulationTime.getIsoTime(timeShift)
+                event = Event(userID=agentId,
+                              objID=objectId,
+                              eventType=actionType,
+                              timestamp=eventTime)
+                events.append(event)
+
+            dailyActivityLevel -= 1
+
+        return events
+
+
+    @staticmethod
+    def evaluate(agentId, hourlyActionRate, objectIds, cumObjectPreference, cumTypeDistribution):
+        '''
+        Decide user action performed on object by flipping a coin.
+        '''
+
+        events = []
+
+        dailyActivityLevel = hourlyActionRate.getActivityLevel()
+
+        currentHour = SimulationTime.getHour()
+        prob = hourlyActionRate.probs[currentHour]
+
+        while dailyActivityLevel > 0:
+            if dailyActivityLevel < 1:
+                prob *= dailyActivityLevel
+            if random.random() <= prob:  # He will adopt an action
+                actionType = sample(EVENT_TYPEs, cumTypeDistribution)
+                if actionType == "CreateEvent":
+                    # Generate a random ID for the new object.
+                    objectName = agentId + str(random.random())
+                    objectId = str(hashlib.md5(objectName).hexdigest())[0:22]
+                else:
+                    objectId = sample(objectIds, cumObjectPreference)  # Get 1 sample the distribution
+                timeShift = np.random.randint(0, 3600)
+                eventTime = SimulationTime.getIsoTime(timeShift)
+                event = Event(userID=agentId,
+                              objID=objectId,
+                              eventType=actionType,
+                              timestamp=eventTime)
+                events.append(event)
+
+            dailyActivityLevel -= 1
 
         return events

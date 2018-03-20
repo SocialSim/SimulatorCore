@@ -33,7 +33,7 @@ class TimeBasedSimulator():
                 SimulationTime.updateTime(dayShift=1)
 
     def step(self):
-        random.shuffle(self.userAgents)
+        # random.shuffle(self.userAgents)
         # self.dependentEventLogger.step()
 
         for agent in self.userAgents:
@@ -55,7 +55,7 @@ class TimeBasedSimulator():
             event.show()
 
     def saveLog(self):
-        with open(DATAPATH+"simulated_events_2015-01-02.txt", "w") as output:
+        with open(DATAPATH+"simulated_events_2015-02-test.txt", "w") as output:
             for event in self.eventHistory:
                 output.write(str(event.getEventTime()) + " " + str(event.getObjID()) + " " + str(event.getUserID())
                              + " " + str(event.getEventType()) + "\n")

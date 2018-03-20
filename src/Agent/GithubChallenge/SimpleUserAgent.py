@@ -23,10 +23,35 @@ class SimpleUserAgent(Agent):
         '''Query StatProxy to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
         
         statProxy = StatProxy.getInstance(agentType="simple")
-        self.hourlyActionRates = statProxy.getUserHourlyActionRate(
+        self.hourlyActionRate = statProxy.getUserHourlyActionRate(
             self.id)
         self.objectPreference = statProxy.getUserObjectPreference(
             self.id)
+        self.objectIds = self.objectPreference.objectIds
+        self.typeDistribution = statProxy.getUserTypeDistribution(self.id)
+
+        self.initCumulativeProbs()
+
+    def initCumulativeProbs(self):
+        '''
+        From the given probability object preference and type distribution to get the cumulative distribution.
+        :return:
+        '''
+        self.cumObjectPreference = [0 for i in range(len(self.objectPreference.probs))]
+        for index in range(len(self.objectPreference.probs)):
+            if index == 0:
+                self.cumObjectPreference[index] = self.objectPreference.probs[0]
+            else:
+                self.cumObjectPreference[index] = self.cumObjectPreference[index-1] + \
+                                                  self.objectPreference.probs[index]
+
+        self.cumTypeDistribution = [0 for i in range(14)]
+        for index in range(14):
+            if index == 0:
+                self.cumTypeDistribution[index] = self.typeDistribution.probs[0]
+            else:
+                self.cumTypeDistribution[index] = self.cumTypeDistribution[index-1] + \
+                                                  self.typeDistribution.probs[index]
 
     def step(self):
         '''
@@ -37,8 +62,14 @@ class SimpleUserAgent(Agent):
         '''
 
         # FIXME what if simulation time DOES NOT advance every one hour
-        events = SimpleBehaviorModel.evaluate(self.hourlyActionRates,
-                                              self.objectPreference)
+        # events = SimpleBehaviorModel.evaluate(self.hourlyActionRate,
+        #                                       self.objectPreference,
+        #                                       self.typeDistribution)
+        events = SimpleBehaviorModel.evaluate(self.id,
+                                              self.hourlyActionRate,
+                                              self.objectIds,
+                                              self.cumObjectPreference,
+                                              self.cumTypeDistribution)
 
         # FIXME the current parameters are read from file, and can not be changed
         # for event in events: # Update the objectPreference for create and delete event.

@@ -26,9 +26,9 @@ class SimulationTime(object):
         self.min = minute
         self.sec = second
 
-        # Set the timezone as UTC
-        os.environ['TZ'] = "UTC"
-        time.tzset()
+        timeTuple = (year, month, day, hour, minute, second, 0, 0, -1)
+        timeTuple = time.struct_time(timeTuple)
+        self.timeStep = time.mktime(timeTuple)
 
     @staticmethod
     def getIsoTime(timeShift=0):
@@ -37,14 +37,7 @@ class SimulationTime(object):
         You can show the time with a given shift in second, used in the simulation stage to print the time of event.
         :return: A string in the ISO time format.
         '''
-        timeTuple = (SimulationTime._instance.year,
-                     SimulationTime._instance.mon,
-                     SimulationTime._instance.day,
-                     SimulationTime._instance.hour,
-                     SimulationTime._instance.min,
-                     SimulationTime._instance.sec, 0, 0, -1)
-        timeStep = time.mktime(timeTuple)
-        timeStep += timeShift
+        timeStep = SimulationTime.getTimestep() + timeShift
         timeTuple = time.gmtime(timeStep)
         iso_time = time.strftime("%Y-%m-%dT%H:%M:%SZ", timeTuple)
         return(iso_time)
@@ -72,6 +65,10 @@ class SimulationTime(object):
     @staticmethod
     def getSec():
         return SimulationTime._instance.sec
+
+    @staticmethod
+    def getTimestep():
+        return SimulationTime._instance.timeStep
 
     @staticmethod
     def getHourFromIso(iso_time):
@@ -121,16 +118,8 @@ class SimulationTime(object):
         if secondShift:
             shift += secondShift
 
-        timeTuple = (SimulationTime._instance.year,
-                     SimulationTime._instance.mon,
-                     SimulationTime._instance.day,
-                     SimulationTime._instance.hour,
-                     SimulationTime._instance.min,
-                     SimulationTime._instance.sec, 0, 0, -1)
-        timeTuple = time.struct_time(timeTuple)
-        timeStep = time.mktime(timeTuple)
-        timeStep += shift
-        timeTuple = time.gmtime(timeStep)
+        SimulationTime._instance.timeStep += shift
+        timeTuple = time.gmtime(SimulationTime._instance.timeStep)
 
         SimulationTime._instance.year = timeTuple.tm_year
         SimulationTime._instance.mon = timeTuple.tm_mon
@@ -139,15 +128,29 @@ class SimulationTime(object):
         SimulationTime._instance.min = timeTuple.tm_min
         SimulationTime._instance.sec = timeTuple.tm_sec
 
+        print("Time Now: %s"%SimulationTime.getIsoTime())
+
 
 if __name__ == '__main__':
+    start = time.time()
+
+    # Set the timezone as UTC
+    os.environ['TZ'] = "UTC"
+    time.tzset()
+
     SimulationTime.getInstance(year=2016,
                                month=5,
                                day=6,
                                hour=3,
                                minute=5,
                                second=6)
-    print SimulationTime.getIsoTime()
+    for i in range(100000):
+        SimulationTime.getIsoTime(i)
+
+    end = time.time()
+
+    print("Time: %f s"%(end-start))
+
     SimulationTime.updateTime(dayShift= 4, hourShift=13)
     timestr = SimulationTime.getIsoTime()
     print SimulationTime.getHourFromIso(timestr)

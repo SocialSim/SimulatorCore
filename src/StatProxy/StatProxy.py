@@ -4,6 +4,7 @@ import copy
 from common.const import *
 from Dependency.ObjectPreference import *
 from Dependency.HourlyActionRate import *
+from Dependency.TypeDistribution import *
 from Dependency.UserDependency import *
 
 class StatProxy(object):
@@ -19,12 +20,13 @@ class StatProxy(object):
     
     def __init__(self, agentType):
         if StatProxy._instance is not None:
-            raise Exception("This class is a singleton!")
+            raise Exception("StatProxy class is a singleton!")
         else:
             StatProxy._instance = self
 
         self.allUserActionRate = None
         self.allObjectPreference = None
+        self.allTypeDistribution = None
         self.userIDs = None
         self.objIDs = None
         self.generalTypeActionRatio = {}
@@ -34,24 +36,12 @@ class StatProxy(object):
 
         self.retrieveStatistics(agentType)
 
-        self.setGeneralTypeActionRatio()
-
-    def setGeneralTypeActionRatio(self):
-        for eventTypeHourlyActionRate in self.allUserActionRate[-1]:
-            eventType = eventTypeHourlyActionRate.actionType
-            averageTypeActionCount = eventTypeHourlyActionRate.dailyActivityLevel
-            self.generalTypeActionRatio[eventType] = averageTypeActionCount
-
-        averageTotalActions = sum(self.generalTypeActionRatio.values())
-
-        if averageTotalActions > 0:
-            for eventType in self.generalTypeActionRatio:
-                self.generalTypeActionRatio[eventType] /= averageTotalActions
 
     def retrieveStatistics(self, agentType):
         self.retrieveUserIDs()
         self.retrieveObjIDs()
         self.retrieveUserActionRate()
+        self.retrieveTypeDistribution()
         self.retrieveObjectPreference()
 
         if agentType == "dependent":
@@ -69,6 +59,9 @@ class StatProxy(object):
     def retrieveObjectPreference(self):
         self.allObjectPreference = pickle.load(open(OBJECT_PREFERENCE_FILE, "rb" ))
 
+    def retrieveTypeDistribution(self):
+        self.allTypeDistribution = pickle.load(open(TYPE_DISTRIBUTION_FILE, "rb"))
+
     def retrieveUserDependency(self):
         self.allUserDependency = pickle.load(open(USER_DEPENDENCY_FILE, "rb" ))
 
@@ -80,7 +73,7 @@ class StatProxy(object):
 
     def getUserHourlyActionRate(self, userId):
         '''
-        :return: a list of HourlyActionRate instances, one for each actionType 
+        Get the hourly action distribution for the given user.
         '''
         if userId in self.allUserActionRate:
             return self.allUserActionRate[userId]
@@ -89,12 +82,21 @@ class StatProxy(object):
 
     def getUserObjectPreference(self, userId):
         '''
-        :return: an ObjectPreference instance
+        Get the object preference for the given user.
         '''
         if userId in self.allObjectPreference:
             return self.allObjectPreference[userId]
         else:  #This is a new user, no record.
             return self.allObjectPreference[-1]
+
+    def getUserTypeDistribution(self, userId):
+        '''
+        Get the type distribution for the given user.
+        '''
+        if userId in self.allTypeDistribution:
+            return self.allTypeDistribution[userId]
+        else:
+            return self.allTypeDistribution[-1]
 
     def getUserDependency(self, userId):
         '''

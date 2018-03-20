@@ -13,9 +13,12 @@ from common.simulationTime import SimulationTime
 import Evaluator.Evaluator as evaluator
 
 def main():
-    start = time.time()
 
     argparser.parseArguments()
+
+    # Set the timezone as UTC
+    os.environ['TZ'] = "UTC"
+    time.tzset()
 
     logging.basicConfig(stream=sys.stderr,
                         format='[%(asctime)s] %(name)s:%(message)s',
@@ -29,13 +32,14 @@ def main():
     userAgents, objectAgents = agentBuilder.build()
 
     logger.info("Init and config simulation setting...")
-    SimulationTime.getInstance(year=2015, month=1, day=2, hour=0, minute=0, second=0)
+    SimulationTime.getInstance(year=2015, month=2, day=1, hour=0, minute=0, second=0)
     simulator = TimeBasedSimulator( userAgents=userAgents,
                                     objectAgents=objectAgents,
-                                    simulationLength=24,
+                                    simulationLength=24*28,
                                     unitTime="hour")
 
     logger.info("Start simulation...")
+    start = time.time()
     simulator.run()
     end = time.time()
     logger.info("Simulation time: %f s"%(end - start))

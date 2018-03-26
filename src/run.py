@@ -8,6 +8,7 @@ from AgentBuilder.AgentBuilder import AgentBuilder
 from Agent.GithubChallenge.SimpleUserAgent import SimpleUserAgent
 from Agent.GithubChallenge.DependentUserAgent import DependentUserAgent
 from Agent.GithubChallenge.SimpleObjectAgent import SimpleObjectAgent
+from Agent.GithubChallenge.SimpleUserClusterAgent import SimpleUserClusterAgent
 from common.const import *
 from common.simulationTime import SimulationTime
 import Evaluator.Evaluator as evaluator
@@ -28,13 +29,15 @@ def main():
     
     logger.info("Init and config agent builder...")
     agentBuilder = AgentBuilder(UserAgentModel=SimpleUserAgent,
-                                ObjectAgentModel=SimpleObjectAgent)
-    userAgents, objectAgents = agentBuilder.build()
+                                ObjectAgentModel=SimpleObjectAgent,
+                                ClusterAgentModel=SimpleUserClusterAgent)
+    userAgents, objectAgents, clusterAgents = agentBuilder.build()
 
     logger.info("Init and config simulation setting...")
     SimulationTime.getInstance(year=2015, month=2, day=1, hour=0, minute=0, second=0)
     simulator = TimeBasedSimulator( userAgents=userAgents,
                                     objectAgents=objectAgents,
+                                    clusterAgents=clusterAgents,
                                     simulationLength=24*28,
                                     unitTime="hour")
 

@@ -3,6 +3,7 @@ import random
 from StatProxy.StatProxy import StatProxy
 from BehaviorModel.SimpleBehaviorModel import SimpleBehaviorModel
 from Agent.Agent import Agent
+from common.const import *
 
 
 class SimpleUserAgent(Agent):
@@ -22,13 +23,11 @@ class SimpleUserAgent(Agent):
     def build(self):
         '''Query StatProxy to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
         
-        statProxy = StatProxy.getInstance(agentType="simple")
-        self.hourlyActionRate = statProxy.getUserHourlyActionRate(
-            self.id)
-        self.objectPreference = statProxy.getUserObjectPreference(
-            self.id)
-        self.objectIds = self.objectPreference.objectIds
+        statProxy = StatProxy.getInstance(analysisLib="simple")
+        self.hourlyActionRate = statProxy.getUserHourlyActionRate(self.id)
         self.typeDistribution = statProxy.getUserTypeDistribution(self.id)
+        self.objectPreference = statProxy.getUserObjectPreference(self.id)
+        self.objectIds = self.objectPreference.getObjectIds()
 
         self.initCumulativeProbs()
 
@@ -38,15 +37,15 @@ class SimpleUserAgent(Agent):
         :return:
         '''
         self.cumObjectPreference = [0 for i in range(len(self.objectPreference.probs))]
-        for index in range(len(self.objectPreference.probs)):
+        for index in range(len(self.objectIds)):
             if index == 0:
                 self.cumObjectPreference[index] = self.objectPreference.probs[0]
             else:
                 self.cumObjectPreference[index] = self.cumObjectPreference[index-1] + \
                                                   self.objectPreference.probs[index]
 
-        self.cumTypeDistribution = [0 for i in range(14)]
-        for index in range(14):
+        self.cumTypeDistribution = [0 for i in range(7)]
+        for index in range(7):
             if index == 0:
                 self.cumTypeDistribution[index] = self.typeDistribution.probs[0]
             else:
@@ -65,11 +64,11 @@ class SimpleUserAgent(Agent):
         # events = SimpleBehaviorModel.evaluate(self.hourlyActionRate,
         #                                       self.objectPreference,
         #                                       self.typeDistribution)
-        events = SimpleBehaviorModel.evaluate(self.id,
-                                              self.hourlyActionRate,
-                                              self.objectIds,
-                                              self.cumObjectPreference,
-                                              self.cumTypeDistribution)
+        events = SimpleBehaviorModel.userEvaluate(self.id,
+                                                  self.hourlyActionRate,
+                                                  self.objectIds,
+                                                  self.cumObjectPreference,
+                                                  self.cumTypeDistribution)
 
         # FIXME the current parameters are read from file, and can not be changed
         # for event in events: # Update the objectPreference for create and delete event.

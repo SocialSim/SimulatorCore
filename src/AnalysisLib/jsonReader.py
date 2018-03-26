@@ -27,18 +27,18 @@ def readJson(filename):
 
 if __name__ == '__main__':
 
-    count = 0
-    with open(DATAPATH + "ISO-time-event_2015-01.txt", "w") as output:
-        for month in range(1, 2):
-            for day in range(20150101,20150132):
+    monthlyDay = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    with open(DATAPATH + "ISO-time-event_2015.txt", "w") as output:
+        for month in range(1, 13):
+            for day in range(1, monthlyDay[month-1]+1):
                 for hour in range(24):
-                    fileName = DATAPATH + "Events/Anon/2015" + str(month).zfill(2) + "/" + str(day) + "/an_2015-01-" + \
-                               str(day%100).zfill(2) + "-" + str(hour) + ".json.gz"
+                    fileName = DATAPATH + "Events/Anon/2015" + str(month).zfill(2) + "/2015" + \
+                               str(month).zfill(2) + str(day).zfill(2)\
+                               + "/an_2015-"+str(month).zfill(2)+"-" + \
+                               str(day).zfill(2) + "-" + str(hour) + ".json.gz"
                     print(fileName)
                     eventList = readJson(fileName)
                     for event in eventList:
-                        if count%1 == 0:
-                            output.write(event)
-                        count += 1
+                        output.write(event)
 
 

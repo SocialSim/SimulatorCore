@@ -14,9 +14,10 @@ class TimeBasedSimulator():
     Time unit: hour
     '''
 
-    def __init__(self, userAgents, objectAgents, simulationLength, unitTime):
+    def __init__(self, userAgents, objectAgents, clusterAgents, simulationLength, unitTime):
         self.userAgents = userAgents
         self.objectAgents = objectAgents
+        self.clusterAgents = clusterAgents
         self.simulationLength = simulationLength
         self.unitTime = unitTime
         self.eventHistory = []
@@ -36,9 +37,13 @@ class TimeBasedSimulator():
         # random.shuffle(self.userAgents)
         # self.dependentEventLogger.step()
 
-        for agent in self.userAgents:
-            events = agent.step()
+        for userAgent in self.userAgents:
+            events = userAgent.step()
             # self.logEvents(events)
+            self.eventHistory += events
+            
+        for clusterAgent in self.clusterAgents:
+            events = clusterAgent.step()
             self.eventHistory += events
 
     def logEvents(self, events):
@@ -59,9 +64,6 @@ class TimeBasedSimulator():
             for event in self.eventHistory:
                 output.write(str(event.getEventTime()) + " " + str(event.getObjID()) + " " + str(event.getUserID())
                              + " " + str(event.getEventType()) + "\n")
-
-    # def getCurrentTime(self):
-    #     return self.currentTime
 
     def getAllUserIDs(self):
         ids = list()

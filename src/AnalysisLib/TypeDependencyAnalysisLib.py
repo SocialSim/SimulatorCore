@@ -83,18 +83,11 @@ class TypeDependencyAnalysisLib(IndependentAnalysisLib):
                         self.objectLastActionType[objectId] = eventType
 
         # Summarize the type dependency
-        totalEventCount = 0
-        self.generalTypeDistribution = {}
         for eventType in self.eventTypes:
             typeCount = float(sum(self.typeDenpendency[eventType].values()))
-            self.generalTypeDistribution[eventType] = typeCount
             for subEventType in self.eventTypes:
                 if typeCount > 0:
                     self.typeDenpendency[eventType][subEventType] /= typeCount
-            totalEventCount += typeCount
-
-        for eventType in self. eventTypes:
-            self.generalTypeDistribution[eventType] /= totalEventCount
 
 
     def getTypeDependency(self, leftEventType, rightEventType):
@@ -110,10 +103,13 @@ if __name__ == '__main__':
     start = time.time()
     fileName = sys.argv[1]
     typeDependencyAnalysisLib = TypeDependencyAnalysisLib(fileName)
+
     for leftType in typeDependencyAnalysisLib.eventTypes:
         for rightType in typeDependencyAnalysisLib.eventTypes:
+
             generalProbability = typeDependencyAnalysisLib.generalTypeDistribution[rightType]
             dependentProbability = typeDependencyAnalysisLib.typeDenpendency[leftType][rightType]
+
             if dependentProbability > 1.5 * generalProbability and generalProbability > 0.05\
                     and dependentProbability > 0.2:
                 print("%s --> %s"%(leftType, rightType))

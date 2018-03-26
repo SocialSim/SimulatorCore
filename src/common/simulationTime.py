@@ -28,6 +28,7 @@ class SimulationTime(object):
 
         timeTuple = (year, month, day, hour, minute, second, 0, 0, -1)
         timeTuple = time.struct_time(timeTuple)
+        self.weekDay = timeTuple.tm_wday
         self.timeStep = time.mktime(timeTuple)
 
     @staticmethod
@@ -71,14 +72,30 @@ class SimulationTime(object):
         return SimulationTime._instance.timeStep
 
     @staticmethod
+    def getWeekDay():
+        return SimulationTime._instance.weekDay
+
+    @staticmethod
     def getHourFromIso(iso_time):
         '''
         Get the hour from a given ISO string. Used in AnalysisLib.
         :param iso_time:
         :return:
         '''
+        # timeArray = time.strptime(iso_time, "%Y-%m-%dT%H:%M:%SZ")
+        hour = int(iso_time[11: 13])
+        # return timeArray.tm_hour
+        return hour
+
+    @staticmethod
+    def getWeekDayFromIso(iso_time):
+        '''
+        Get the day among one week given a ISO string. Used in AnalysisLib.
+        :param iso_time:
+        :return:
+        '''
         timeArray = time.strptime(iso_time, "%Y-%m-%dT%H:%M:%SZ")
-        return timeArray.tm_hour
+        return timeArray.tm_wday
 
     @staticmethod
     def updateTime(yearShift=None, monthShift=None, dayShift=None,
@@ -127,6 +144,7 @@ class SimulationTime(object):
         SimulationTime._instance.hour = timeTuple.tm_hour
         SimulationTime._instance.min = timeTuple.tm_min
         SimulationTime._instance.sec = timeTuple.tm_sec
+        SimulationTime._instance.weekDay = timeTuple.tm_wday
 
         print("Time Now: %s"%SimulationTime.getIsoTime())
 

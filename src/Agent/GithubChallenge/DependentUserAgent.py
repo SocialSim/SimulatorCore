@@ -27,7 +27,7 @@ class DependentUserAgent(SimpleUserAgent):
         HourlyActionRate instances, as well as the userDependency
         relationships.'''
 
-        statProxy = StatProxy.getInstance(agentType="dependent")
+        statProxy = StatProxy.getInstance(analysisLib="dependent")
         self.hourlyActionRates = statProxy.getUserHourlyActionRate(
             self.id)
         self.objectPreference = statProxy.getUserObjectPreference(

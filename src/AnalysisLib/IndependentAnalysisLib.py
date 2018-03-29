@@ -8,34 +8,24 @@ import common.analysisArgParser as argParser
 
 from Dependency.ObjectPreference import ObjectPreference
 from Dependency.HourlyActionRate import HourlyActionRate
+from AnalysisLib import AnalysisLib
 
 # FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/event_2015-01-18_24.txt"
 # FILE_NAME = "/Users/liushengzhong/Desktop/Code/Python/SimulatorCore/data/100-compressed_event_2015-01-01.txt"
 
-class IndependentAnalysisLib:
-    _instance = None
-
-    @staticmethod
-    def getInstance():
-        """ Static access method. """
-        if IndependentAnalysisLib._instance is None:
-            IndependentAnalysisLib()
-        return IndependentAnalysisLib._instance
+class IndependentAnalysisLib(AnalysisLib):
 
     def __init__(self):
-        if IndependentAnalysisLib._instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            IndependentAnalysisLib._instance = self
+        AnalysisLib.__init__(self)
 
         self.activityThreshold = 10 #Users with activities over this threshold will be set as active users.
-        self.userIds = {} #Store the user IDs, and their number of total actions.
-        self.objectIds = {} #Store the obj IDs, and their number of total actions.
+        # self.userIds = {} #Store the user IDs, and their number of total actions.
+        # self.objectIds = {} #Store the obj IDs, and their number of total actions.
         self.eventTypes = ["CommitCommentEvent", "CreateEvent", "DeleteEvent", "ForkEvent", "IssueCommentEvent",
                            "IssuesEvent", "PullRequestEvent", "PushEvent", "WatchEvent", "PublicEvent",
                            "MemberEvent", "GollumEvent", "ReleaseEvent", "PullRequestReviewCommentEvent"]
-        self.userObjectPreference = {}
-        self.userHourlyActionRate = {} #Should only count the independent actions, specific to event types.
+        # self.userObjectPreference = {}
+        # self.userHourlyActionRate = {} #Should only count the independent actions, specific to event types.
         self.generalTypeActionCount = {} # The general count of actions belonging to each type.
         self.generalTypeActionRatio = {}
         self.generalObjectPreference = {}
@@ -224,12 +214,6 @@ class IndependentAnalysisLib:
     def userTypeEventCount(self, userId, eventType):
         return sum(self.userHourlyActionRate[userId][eventType])
 
-    def getUserIds(self):
-        return self.userIds
-
-    def getObjectIds(self):
-        return self.objectIds
-
     def getEventTypes(self):
         return self.eventTypes
 
@@ -281,9 +265,6 @@ class IndependentAnalysisLib:
                 self.generalObjectPreference.values())
         return objectPreference
 
-    def getUserDependentActions(self, userID):
-        return None
-
     def storeStatistics(self):
         self.checkStatFolder()
         print "store user is"
@@ -295,54 +276,6 @@ class IndependentAnalysisLib:
         print "store object preference"
         self.storeUserObjectPreference()
 
-    def checkStatFolder(self):
-        if not os.path.exists(STAT_PATH):
-            os.makedirs(STAT_PATH)
-
-    def storeUserID(self):
-        # pickle.dump(self.userIds, open(USER_ID_FILE,'w'))
-        with open(USER_ID_FILE, 'w') as thefile:
-            for item in self.userIds:
-                  thefile.write("%s\n" % item)
-
-    def storeObjID(self):
-        # pickle.dump(self.objectIds, open(OBJ_ID_FILE,'w'))
-        with open(OBJ_ID_FILE, 'w') as thefile:
-            for item in self.objectIds:
-                  thefile.write("%s\n" % item)
-
-    def storeUserActionRate(self):
-        allActionRate = dict()
-        for userId in self.userHourlyActionRate:
-            actionRate = self.getUserHourlyActionRate(userId)
-            allActionRate[userId] = actionRate
-
-        newUserActionRate = self.getUserHourlyActionRate(-1)
-        allActionRate[-1] = newUserActionRate
-
-        # pickle.dump(allActionRate, open(USER_ACTION_RATE_FILE,'w'))
-        
-        with open(USER_ACTION_RATE_FILE, 'w') as thefile:
-            for item in allActionRate:
-                thefile.write("%s %s\n" % (item, len(allActionRate[item])))
-                for actionRate in allActionRate[item]:
-                    thefile.write("%s\n" % actionRate)
-
-        # favorite_color = pickle.load( open( USER_ACTION_RATE_FILE, "rb" ) )
-
-    def storeUserObjectPreference(self):
-        allObjectPreference = dict()
-        for userId in self.userObjectPreference:
-            objectPreference = self.getUserObjectPreference(userId)
-            allObjectPreference[userId] = objectPreference
-
-        newUserObjectPreference = self.getUserObjectPreference(-1)
-        allObjectPreference[-1] = newUserObjectPreference
-
-        # pickle.dump(allObjectPreference, open(OBJECT_PREFERENCE_FILE,'w'))
-        with open(OBJECT_PREFERENCE_FILE, 'w') as thefile:
-            for item in allObjectPreference:
-                thefile.write("%s" % (allObjectPreference[item]))
 
 
 if __name__ == '__main__':

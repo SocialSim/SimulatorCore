@@ -7,7 +7,7 @@ import time
 def main():
     start = time.time()
     argparser.analysisArgParser()
-    analysisLib = ClusIndependentAnalysisLib.getInstance()
+    analysisLib = IndependentAnalysisLib.getInstance()
     analysisLib.storeStatistics()
     end = time.time()
     print("Analyzing time: %f"%(end - start))

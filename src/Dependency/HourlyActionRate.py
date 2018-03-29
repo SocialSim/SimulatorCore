@@ -21,8 +21,7 @@ class HourlyActionRate():
         assert (len(probs) == 24)
 
     def __str__(self):
-        result = "%s %s %s " % (str(self.agentId), str(self.activityLevel), 
-                str(self.actionType))
+        result = "%s %s " % (str(self.agentId), str(self.dailyActivityLevel)) 
         for prob in self.probs:
             result += "%s " % prob
         return result

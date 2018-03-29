@@ -59,13 +59,12 @@ class AnalysisLib(object):
 
         newUserActionRate = self.getUserHourlyActionRate(-1)
         allActionRate[-1] = newUserActionRate
+        print allActionRate[-1]
 
         with open(USER_ACTION_RATE_FILE, 'w') as thefile:
             for item in allActionRate:
-                print item
-                thefile.write("%s %s\n" % (item, len(allActionRate[item])))
-                for actionRate in allActionRate[item]:
-                    thefile.write("%s\n" % actionRate)
+                thefile.write("%s %s\n" % (item, 1))
+                thefile.write("%s\n" % allActionRate[item])
 
 
     def storeUserObjectPreference(self):
@@ -74,10 +73,7 @@ class AnalysisLib(object):
             objectPreference = self.getUserObjectPreference(userId)
             allObjectPreference[userId] = objectPreference
 
-        newUserObjectPreference = self.getUserObjectPreference(-1)
-        allObjectPreference[-1] = newUserObjectPreference
-
-        with open(OBJECT_PREFERENCE_FILE, 'w') as thefile:
+        with open(USER_OBJECT_PREFERENCE_FILE, 'w') as thefile:
             for item in allObjectPreference:
                 thefile.write("%s" % (allObjectPreference[item]))
 

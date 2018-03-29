@@ -13,7 +13,11 @@ class TypeDistribution():
         assert (all(0.0 <= prob <= 1.0 for prob in probs))
 
     def __str__(self):
-        return "{%s %s}" % (str(self.agentId), str(self.probs))
+        result = "%s " % (str(self.agentId))
+        for prob in self.probs:
+            result += "%s " % str(prob)
+        result += "\n"
+        return result
 
     def getAgentId(self):
         return self.agentId

@@ -4,6 +4,7 @@ from collections import deque
 import copy
 import time
 import json
+import pickle
 import sys
 import common.analysisArgParser as argParser
 import matplotlib.pyplot as plt
@@ -366,7 +367,9 @@ class IndependentAnalysisLib(AnalysisLib):
         newUserTypeDistribution = self.getUserTypeDistribution(-1)
         allTypeDistribution[-1] = newUserTypeDistribution
 
-        pickle.dump(allTypeDistribution, open(USER_TYPE_DISTRIBUTION_FILE, 'w'))
+        with open(USER_TYPE_DISTRIBUTION_FILE, 'w') as thefile:
+            for item in allTypeDistribution:
+                thefile.write("%s" % (allTypeDistribution[item]))
 
     def getMostActiveUser(self):
         '''

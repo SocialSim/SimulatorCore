@@ -3,7 +3,7 @@ class HourlyActionRate():
     A simple data structure to hold an agent's action rate each hour of a day. This time-dependent action is independent of other agents' actions.
     '''
 
-    def __init__(self, agentId, activityLevel, actionType, probs):
+    def __init__(self, agentId, activityLevel, probs):
         '''
         Data sturucure for user's type-specific hourly action distribution.
         :param agentId: user Id
@@ -12,8 +12,7 @@ class HourlyActionRate():
         :param probs: probability distribution over each hour of one day
         '''
         self.agentId = agentId
-        self.activityLevel = int(activityLevel)
-        self.actionType = actionType
+        self.dailyActivityLevel = activityLevel
         self.probs = list(probs)
 
         # Make sure probs is a proper distribution
@@ -27,6 +26,18 @@ class HourlyActionRate():
         for prob in self.probs:
             result += "%s " % prob
         return result
+
+    def setActivityLevel(self, activityLevel):
+        self.dailyActivityLevel = activityLevel
+
+    def getAgentId(self):
+        return self.agentId
+
+    def getActivityLevel(self):
+        return self.dailyActivityLevel
+
+    def getProbs(self):
+        return self.probs
 
 def HourlyActionRateSerializer(obj):
     if isinstance(obj, HourlyActionRate):

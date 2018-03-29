@@ -1,6 +1,11 @@
 import random
+import hashlib
+import numpy as np
 from scipy.stats import rv_discrete
 from common.event import Event
+from common.simulationTime import SimulationTime
+from common.const import *
+from common.discreteSample import sample
 
 
 class SimpleBehaviorModel():
@@ -9,39 +14,78 @@ class SimpleBehaviorModel():
         pass
 
     @staticmethod
-    def evaluate(hourlyActionRates, objectPreference, currentTime, unitTime):
+    def userEvaluate(userId, hourlyActionRate, objectIds, cumObjectPreference, cumTypeDistribution):
         '''
-        Decide user action performed on object by flipping a coin.
-
-        :param hourlyActionRates: list of agent's HourlyActionRate instance, each instance corresponding to one actionType
-        :param objectPreference: agent's preference over objects she touches.
-
-        :return: a list of events
+        Used for user agent. Decide user action performed on object by flipping a coin.
         '''
 
         events = []
-        
-        objectIndexes = [i for i in range(len(objectPreference.objectIds))]
-        rv = rv_discrete(
-            values=(objectIndexes, objectPreference.probs))
 
-        for hourlyActionRate in hourlyActionRates:  #Consider each type of actions independently
-            dailyActivityLevel = hourlyActionRate.activityLevel # How many actions of this type this user may take per day?
-            if sum(hourlyActionRate.probs) == 0: #No record on this type of actions.
-                continue
-            if dailyActivityLevel == 0:
-                continue
-            prob = hourlyActionRate.probs[currentTime % 24]
+        dailyActivityLevel = hourlyActionRate.getActivityLevel()
 
-            for count in range(dailyActivityLevel):
-                if random.random() <= prob:  # He will adopt an action of this type
-                    agentId = hourlyActionRate.agentId
-                    objectId = objectPreference.objectIds[rv.rvs(size=1)[0]]  # Get 1 sample the distribution
-                    actionType = hourlyActionRate.actionType
-                    event = Event(userID = agentId,
-                        objID = objectId,
-                        eventType = actionType,
-                        timestamp = currentTime)
-                    events.append(event)
+        currentHour = SimulationTime.getHour()
+        prob = hourlyActionRate.probs[currentHour]
+
+        while dailyActivityLevel > 0:
+            if dailyActivityLevel < 1:
+                prob *= dailyActivityLevel
+            if random.random() <= prob:  # He will adopt an action
+                actionType = sample(CORE_EVENT_TYPES, cumTypeDistribution)
+
+                if actionType == "CreateEvent":
+                    # Generate a random ID for the new object.
+                    objectName = userId.join(str(random.random()))
+                    objectId = str(hashlib.md5(objectName).hexdigest())[0:22]
+                else:
+                    objectId = sample(objectIds, cumObjectPreference)  # Get 1 sample the distribution
+
+                timeShift = np.random.randint(0, 3600)
+                event = Event(userID=userId,
+                              objID=objectId,
+                              eventType=actionType,
+                              timestamp=SimulationTime.getIsoTime(timeShift))
+                events.append(event)
+
+            dailyActivityLevel -= 1
+
+        return events
+
+    @staticmethod
+    def clusterEvaluate(clusterAgent, hourlyActionRate, cumTypeDistribution, memberObjectPreferences,
+                        memberCumObjectPreference):
+        '''
+        Used for cluster agent. Decide user action performed on object by flipping a coin.
+        '''
+
+        events = []
+
+        dailyActivityLevel = hourlyActionRate.getActivityLevel()
+
+        currentHour = SimulationTime.getHour()
+        prob = hourlyActionRate.probs[currentHour]
+
+        while dailyActivityLevel > 0:
+            if dailyActivityLevel < 1:
+                prob *= dailyActivityLevel
+            if random.random() <= prob:  # He will adopt an action
+                actionType = sample(CORE_EVENT_TYPES, cumTypeDistribution)
+                userId = clusterAgent.scheduleUser()
+
+                if actionType == "CreateEvent":
+                    # Generate a random ID for the new object.
+                    objectName = userId.join(str(random.random()))
+                    objectId = str(hashlib.md5(objectName).hexdigest())[0:22]
+                else:
+                    objectId = sample(memberObjectPreferences[userId].objectIds,
+                                      memberCumObjectPreference[userId])
+
+                timeShift = np.random.randint(0, 3600)
+                event = Event(userID=userId,
+                              objID=objectId,
+                              eventType=actionType,
+                              timestamp=SimulationTime.getIsoTime(timeShift))
+                events.append(event)
+
+            dailyActivityLevel -= 1
 
         return events

@@ -9,11 +9,12 @@ class AnalysisLib(object):
     @staticmethod
     def getInstance():
         """ Static access method. """
-        if IndependentAnalysisLib._instance is None:
-            IndependentAnalysisLib()
-        return IndependentAnalysisLib._instance
+        if AnalysisLib._instance is None:
+            AnalysisLib()
+        return AnalysisLib._instance
 
     def __init__(self):
+        AnalysisLib._instance = self
 
         self.userIds = {} #Store the user IDs, and their number of total actions.
         self.objectIds = {} #Store the obj IDs, and their number of total actions.
@@ -61,6 +62,7 @@ class AnalysisLib(object):
 
         with open(USER_ACTION_RATE_FILE, 'w') as thefile:
             for item in allActionRate:
+                print item
                 thefile.write("%s %s\n" % (item, len(allActionRate[item])))
                 for actionRate in allActionRate[item]:
                     thefile.write("%s\n" % actionRate)

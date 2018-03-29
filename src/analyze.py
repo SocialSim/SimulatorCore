@@ -1,14 +1,16 @@
 import common.analysisArgParser as argparser
 from AnalysisLib.AnalysisLib import AnalysisLib
 from AnalysisLib.IndependentAnalysisLib import IndependentAnalysisLib
+from AnalysisLib.ClusIndependentAnalysisLib import ClusIndependentAnalysisLib
 import time
 
 def main():
     start = time.time()
     argparser.analysisArgParser()
-    IndependentAnalysisLib()
+    analysisLib = ClusIndependentAnalysisLib.getInstance()
+    analysisLib.storeStatistics()
     end = time.time()
-    print("Analyze time: %f"%(end - start))
+    print("Analyzing time: %f"%(end - start))
 
 if __name__ == "__main__":
     main()

@@ -9,7 +9,7 @@ class Agent(object):
         '''Query StatProxy to get model attributes.'''
         pass
 
-    def step(self, currentTime, timeStep):
+    def step(self):
         '''
         The step() function is used by TimeBasedSimulator. This function is invoked at every time step in the simulation loop.
 

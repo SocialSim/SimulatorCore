@@ -39,7 +39,7 @@ class ClusIndependentAnalysisLib(IndependentAnalysisLib):
         self.rateClusterNum = 10
         self.typeClusterNum = 6
 
-        self.regularUserIds = []
+        # Cluster statistics
         self.clusterResult = []
         self.clusterIds = {}
         self.clusterHourlyActionRate = {}
@@ -58,18 +58,17 @@ class ClusIndependentAnalysisLib(IndependentAnalysisLib):
         :return:
         '''
         # Prepare the REGULAR users.
+        print("Clustering...")
+
         hourlyRateAttributes = []
         typeAttributes = []
 
-        for userId in self.userIds:
-            if self.isActiveUser(userId):
-                continue
-            elif self.isInactiveUser(userId):
-                self.inactiveMembers[userId] = self.userIds[userId]
-            else:
-                self.regularUserIds.append(userId)
-                hourlyRateAttributes.append(self.userHourlyActionRate[userId])
-                typeAttributes.append(self.userTypeDistribution[userId])
+        for userId in self.inactiveUserIds:
+            self.inactiveMembers[userId] = self.userIds[userId]
+
+        for userId in self.regularUserIds:
+            hourlyRateAttributes.append(self.userHourlyActionRate[userId])
+            typeAttributes.append(self.userTypeDistribution[userId])
 
         # Do the clustering according to users hourly rate
         start = time.time()

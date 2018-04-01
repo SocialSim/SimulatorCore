@@ -41,6 +41,11 @@ class IndependentAnalysisLib(object):
         self.coreEventTypes = {"CreateEvent": 0, "DeleteEvent": 1, "ForkEvent": 2, "IssuesEvent": 3,
                                "PullRequestEvent": 4, "PushEvent": 5, "WatchEvent": 6}
 
+        # Event count for the users
+        self.userObjectCount = {}
+        self.userHourlyCount = {}
+        self.userTypeCount = {}
+
         # Statistics for the users
         self.userObjectPreference = {}
         self.userHourlyActionRate = {}
@@ -52,16 +57,19 @@ class IndependentAnalysisLib(object):
         self.generalHourlyActionRate = np.array([0.0 for i in range(24)])
 
         # Statistics for inactive user cluster.
+        self.inactiveUserIds = []
         self.inactiveUserCount = 0
         self.inactiveTotalActionCount = 0
         self.inactiveTypeDistribution = np.array([0.0 for i in range(7)])
         self.inactiveHourlyActionRate = np.array([0.0 for i in range(24)])
 
         # Statistics fro regular users.
+        self.regularUserIds = []
         self.regularUserCount = 0
         self.regularTotalActionCount = 0
 
         # Statistics for active users
+        self.activeUserIds = []
         self.activeUserCount = 0
         self.activeTotalActionCount = 0
 
@@ -77,6 +85,8 @@ class IndependentAnalysisLib(object):
         The first pass, we will only count the userIds, objIds, user activity levels, and general distribution.
         :return:
         '''
+        print("First pass...")
+
         with open(self.fileName, "r") as file:
             for line in file:
                 if not line:
@@ -108,12 +118,15 @@ class IndependentAnalysisLib(object):
         for userId in self.userIds:
             if self.isActiveUser(userId):
                 self.activeUserCount += 1
+                self.activeUserIds.append(userId)
                 self.activeTotalActionCount += self.userIds[userId]
             elif self.isInactiveUser(userId):
                 self.inactiveUserCount += 1
+                self.inactiveUserIds.append(userId)
                 self.inactiveTotalActionCount += self.userIds[userId]
             else:
                 self.regularUserCount += 1
+                self.regularUserIds.append(userId)
                 self.regularTotalActionCount += self.userIds[userId]
 
         # Extract the general hourlyActionRate and typeDistribution
@@ -126,6 +139,8 @@ class IndependentAnalysisLib(object):
         Note: We will not compute hourly action rate for inactive users.
         :return:
         '''
+        print("Second pass...")
+
         with open(self.fileName, "r") as file:
             for line in file:
                 if not line:
@@ -138,32 +153,29 @@ class IndependentAnalysisLib(object):
                     if eventType not in self.coreEventTypes:
                         continue
 
-
                     #Update the user hourly action rate for regular/active users, and inactive cluster.
                     if self.isInactiveUser(userId):
                         self.updateInactiveDistributions(hour, eventType)
                     else:
-                        if userId not in self.userHourlyActionRate:
+                        if userId not in self.userHourlyCount:
                             self.updateUserHourlyActionRate(userId, hour, "new")
                         else:
                             self.updateUserHourlyActionRate(userId, hour, "old")
 
+                        if userId not in self.userTypeCount:
+                            self.updateUserTypeDistribution(userId, eventType, "new")
+                        else:
+                            self.updateUserTypeDistribution(userId, eventType, "old")
+
                     #Upadate the object preference for all users
-                    if userId not in self.userObjectPreference:
+                    if userId not in self.userObjectCount:
                         self.updateUserObjectPreference(userId, objectId, "new")
                     else:
                         self.updateUserObjectPreference(userId, objectId, "old")
 
-                    #Update the type distribution for all users
-                    if userId not in self.userTypeDistribution:
-                        self.updateUserTypeDistribution(userId, eventType, "new")
-                    else:
-                        self.updateUserTypeDistribution(userId, eventType, "old")
-
         #Update the userHourActionRate, userObjectPreference, and userTypeDistribution
         self.summarizeInactiveDistributions()
         self.summarizeUserDistributions()
-
 
     def eventSplit(self, line):
         '''
@@ -211,9 +223,9 @@ class IndependentAnalysisLib(object):
         :return:
         '''
         if userType == "new":
-            self.userHourlyActionRate[userId] = np.array([0.0 for i in range(24)])
+            self.userHourlyCount[userId] = np.array([0.0 for i in range(24)])
 
-        self.userHourlyActionRate[userId][hour] += 1
+        self.userHourlyCount[userId][hour] += 1
 
     def updateUserTypeDistribution(self, userId, eventType, userType):
         '''
@@ -224,10 +236,10 @@ class IndependentAnalysisLib(object):
         :return:
         '''
         if userType == "new":
-            self.userTypeDistribution[userId] = np.array([0.0 for i in range(7)])
+            self.userTypeCount[userId] = np.array([0.0 for i in range(7)])
 
         typeIndex = self.coreEventTypes[eventType]
-        self.userTypeDistribution[userId][typeIndex] += 1
+        self.userTypeCount[userId][typeIndex] += 1
 
     def updateUserObjectPreference(self, userId, objectId, userType):
         '''
@@ -238,12 +250,12 @@ class IndependentAnalysisLib(object):
         :return:
         '''
         if userType == "new":
-            self.userObjectPreference[userId] = {objectId: 1.0}
+            self.userObjectCount[userId] = {objectId: 1.0}
         else:
-            if objectId not in self.userObjectPreference[userId]:  # Did not touch this object before
-                self.userObjectPreference[userId][objectId] = 1.0
+            if objectId not in self.userObjectCount[userId]:  # Did not touch this object before
+                self.userObjectCount[userId][objectId] = 1.0
             else:
-                self.userObjectPreference[userId][objectId] += 1
+                self.userObjectCount[userId][objectId] += 1
 
     def summarizeGeneralDistribtions(self):
         '''
@@ -268,15 +280,17 @@ class IndependentAnalysisLib(object):
         Summarize the user hourlyActionRate and objectPreference
         :return:
         '''
-        for userId in self.userHourlyActionRate:
-            self.userHourlyActionRate[userId] /= self.userIds[userId]
+        for userId in self.userHourlyCount:
+            self.userHourlyActionRate[userId] = self.userHourlyCount[userId] / self.userIds[userId]
 
-        for userId in self.userTypeDistribution:
-            self.userTypeDistribution[userId] /= self.userIds[userId]
+        for userId in self.userTypeCount:
+            self.userTypeDistribution[userId] = self.userTypeCount[userId] / self.userIds[userId]
 
-        for userId in self.userObjectPreference:
-            for objectId in self.userObjectPreference[userId]:
-                self.userObjectPreference[userId][objectId] /= self.userIds[userId]
+        for userId in self.userObjectCount:
+            self.userObjectPreference[userId] = {}
+            for objectId in self.userObjectCount[userId]:
+                self.userObjectPreference[userId][objectId] = \
+                    self.userObjectCount[userId][objectId] / self.userIds[userId]
 
     def isActiveUser(self, userId):
         '''
@@ -486,7 +500,7 @@ if __name__ == '__main__':
     print("Number of active users: %d"%len(independentAnalysisLib.userHourlyActionRate.keys()))
     print("Average daily activity level: %f"%(independentAnalysisLib.generalTotalActionCount /
                                               (len(independentAnalysisLib.userIds) *
-                                              independentAnalysisLib.analysisLength)))
+                                              ANALYSIS_LENGTH)))
     print("Average number of repos: %d"%(independentAnalysisLib.generalTotalActionCount /
                                          len(independentAnalysisLib.userIds)))
 

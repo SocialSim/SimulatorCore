@@ -34,7 +34,6 @@ class TypeDependencyAnalysisLib(IndependentAnalysisLib):
 
         self.typeDenpendency = {}
         self.objectLastActionType = {}
-        self.generalTypeDistribution = {}
 
         # Initialization
         self.initTypeDenpendency()
@@ -49,9 +48,9 @@ class TypeDependencyAnalysisLib(IndependentAnalysisLib):
         Initialize the type dependency to be empty.
         :return:
         '''
-        for leftType in self.eventTypes:
+        for leftType in CORE_EVENT_TYPES:
             self.typeDenpendency[leftType] = {}
-            for rightType in self.eventTypes:
+            for rightType in CORE_EVENT_TYPES:
                 self.typeDenpendency[leftType][rightType] = float(0)
 
     def initObjectLastActionType(self):
@@ -76,6 +75,10 @@ class TypeDependencyAnalysisLib(IndependentAnalysisLib):
                     line = line.strip('\n')
                     eventTime, hour, objectId, userId, eventType = self.eventSplit(line)
 
+                    # Skip the events types that we do not care.
+                    if eventType not in self.coreEventTypes:
+                        continue
+
                     if objectId in self.objectLastActionType:
                         if self.objectLastActionType[objectId]:
                             preEventType = self.objectLastActionType[objectId]
@@ -83,9 +86,9 @@ class TypeDependencyAnalysisLib(IndependentAnalysisLib):
                         self.objectLastActionType[objectId] = eventType
 
         # Summarize the type dependency
-        for eventType in self.eventTypes:
+        for eventType in CORE_EVENT_TYPES:
             typeCount = float(sum(self.typeDenpendency[eventType].values()))
-            for subEventType in self.eventTypes:
+            for subEventType in CORE_EVENT_TYPES:
                 if typeCount > 0:
                     self.typeDenpendency[eventType][subEventType] /= typeCount
 
@@ -104,17 +107,17 @@ if __name__ == '__main__':
     fileName = sys.argv[1]
     typeDependencyAnalysisLib = TypeDependencyAnalysisLib(fileName)
 
-    for leftType in typeDependencyAnalysisLib.eventTypes:
-        for rightType in typeDependencyAnalysisLib.eventTypes:
+    for leftType in CORE_EVENT_TYPES:
+        for rightType in CORE_EVENT_TYPES:
 
-            generalProbability = typeDependencyAnalysisLib.generalTypeDistribution[rightType]
+            rightTypeIndex = typeDependencyAnalysisLib.coreEventTypes[rightType]
+            generalProbability = typeDependencyAnalysisLib.generalTypeDistribution[rightTypeIndex]
             dependentProbability = typeDependencyAnalysisLib.typeDenpendency[leftType][rightType]
 
-            if dependentProbability > 1.5 * generalProbability and generalProbability > 0.05\
-                    and dependentProbability > 0.2:
+            if dependentProbability > 1.3 * generalProbability and generalProbability > 0.05:
                 print("%s --> %s"%(leftType, rightType))
-                print("General probability: %f"%typeDependencyAnalysisLib.generalTypeDistribution[rightType])
-                print("Dependent probability: %f"%typeDependencyAnalysisLib.typeDenpendency[leftType][rightType])
+                print("General probability: %f" % generalProbability)
+                print("Dependent probability: %f" % dependentProbability)
                 print(" ")
 
     end = time.time()

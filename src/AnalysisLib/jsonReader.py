@@ -2,6 +2,7 @@ from common.const import *
 import json
 import gzip
 import time
+import sys
 
 
 def convertTime(iso_time):
@@ -10,8 +11,16 @@ def convertTime(iso_time):
     return int(timeStamp)
 
 def extractEvent(record):
-    userId = record["actor"]["id_h"]
-    objectId = record["repo"]["id_h"]
+
+    if "id_h" in record["actor"]:
+        userId = record["actor"]["id_h"]
+    else:
+        userId = "None"
+
+    if "id_h" in record["repo"]:
+        objectId = record["repo"]["id_h"]
+    else:
+        objectId = "None"
     # eventTime = convertTime(record["created_at"])
     eventTime = record["created_at"]
     eventType = record["type"]
@@ -28,17 +37,24 @@ def readJson(filename):
 if __name__ == '__main__':
 
     monthlyDay = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    with open(DATAPATH + "ISO-time-event_2015.txt", "w") as output:
-        for month in range(1, 13):
-            for day in range(1, monthlyDay[month-1]+1):
-                for hour in range(24):
-                    fileName = DATAPATH + "Events/Anon/2015" + str(month).zfill(2) + "/2015" + \
-                               str(month).zfill(2) + str(day).zfill(2)\
-                               + "/an_2015-"+str(month).zfill(2)+"-" + \
-                               str(day).zfill(2) + "-" + str(hour) + ".json.gz"
-                    print(fileName)
-                    eventList = readJson(fileName)
-                    for event in eventList:
-                        output.write(event)
+    # for year in range(2015, 2018):
+    #     for month in range(1, 13):
+    #         if year == 2017 and month > 8:
+    #             break
+    year = int(sys.argv[1][0: 4])
+    month = int(sys.argv[1][4: 6])
+    outputFile = DATAPATH + "Monthly_Events/ISO-time-event_" + str(year) + "-" + str(month).zfill(2) + ".txt"
+    print(outputFile)
+    with open(outputFile, "w") as output:
+        for day in range(1, monthlyDay[month - 1] + 1):
+            for hour in range(24):
+                fileName = DATAPATH + "Events/Anon/"+ str(year) + str(month).zfill(2) + "/" + str(year) + \
+                           str(month).zfill(2) + str(day).zfill(2) \
+                           + "/an_"+str(year)+"-" + str(month).zfill(2) + "-" + \
+                           str(day).zfill(2) + "-" + str(hour) + ".json.gz"
+                print(fileName)
+                eventList = readJson(fileName)
+                for event in eventList:
+                    output.write(event)
 
 

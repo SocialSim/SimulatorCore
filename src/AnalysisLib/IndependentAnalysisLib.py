@@ -70,7 +70,6 @@ class IndependentAnalysisLib(AnalysisLib):
         # The second pass, calculate the hourlyActionRate and objectPreference
         self.secondPass()
 
-
     def firstPass(self):
         '''
         The first pass, we will only count the userIds, objIds, user activity levels, and general distribution.

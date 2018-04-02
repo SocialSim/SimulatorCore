@@ -21,7 +21,6 @@ class AnalysisLib(object):
         self.userObjectPreference = {}
         self.userHourlyActionRate = {} #Should only count the independent actions, specific to event types.
 
-
     def getUserHourlyActionRate(self, userId):
         raise Exception("Please define how user hourly action rate is calculated")
 
@@ -38,18 +37,15 @@ class AnalysisLib(object):
         if not os.path.exists(STAT_PATH):
             os.makedirs(STAT_PATH)
 
-
     def storeUserID(self):
         with open(USER_ID_FILE, 'w') as thefile:
             for item in self.userIds:
                   thefile.write("%s\n" % item)
 
-
     def storeObjID(self):
         with open(OBJ_ID_FILE, 'w') as thefile:
             for item in self.objectIds:
                   thefile.write("%s\n" % item)
-
 
     def storeUserActionRate(self):
         allActionRate = dict()
@@ -59,13 +55,11 @@ class AnalysisLib(object):
 
         newUserActionRate = self.getUserHourlyActionRate(-1)
         allActionRate[-1] = newUserActionRate
-        print allActionRate[-1]
 
         with open(USER_ACTION_RATE_FILE, 'w') as thefile:
             for item in allActionRate:
                 thefile.write("%s %s\n" % (item, 1))
                 thefile.write("%s\n" % allActionRate[item])
-
 
     def storeUserObjectPreference(self):
         allObjectPreference = dict()
@@ -76,7 +70,6 @@ class AnalysisLib(object):
         with open(USER_OBJECT_PREFERENCE_FILE, 'w') as thefile:
             for item in allObjectPreference:
                 thefile.write("%s" % (allObjectPreference[item]))
-
 
 if __name__ == '__main__':
     independentAnalysisLib = IndependentAnalysisLib()

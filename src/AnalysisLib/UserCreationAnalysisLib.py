@@ -11,7 +11,7 @@ from common.const import *
 from sklearn import linear_model
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import PolynomialFeatures
 from multiprocessing import Pool
 from statsmodels.tsa.ar_model import AR
@@ -146,18 +146,19 @@ class UserCreationAnalysisLib:
         arma = ARMA(weekCount, arma_order).fit(disp=-1)
         y_arma_predict = arma.predict()
 
-        for i in range(ar_order, len(x)):
-            print(str(x[i][0]) + " " + str(y[i]) + " " + str(y_predict[i]) + " " + str(y_ar_predict[i-ar_order]))
+        print("Week, Groundtruth, Linear Model, AR Model")
+        for i in range(len(x)-52, len(x)):
+            print(str(x[i][0]) + " " + str(int(y[i])) + " " + str(int(y_predict[i])) + " " + str(int(y_ar_predict[i-ar_order])))
 
         # print(len(x), len(y_predict), len(y_ar_predict), len(y_arma_predict))
 
         # print('Coefficients of linear model: %f' % self.regressor.coef_)
-        print("Mean squared error of linear model: %.2f" % mean_squared_error(y, y_predict))
-        print("Mean squared error of PolyNomial model: %.2f" % mean_squared_error(y, y_poly_predict))
-        # print("Mean squared error of SVM model: %.2f" % mean_squared_error(y, y_svr_predict))
-        # print("Mean squared error of MLP model: %.2f" % mean_squared_error(y, y_mlp_predict))
-        print("Mean squared error of AR model: %.2f" % mean_squared_error(y[ar_order:], y_ar_predict))
-        print("Mean squared error of ARMA model: %.2f" % mean_squared_error(y, y_arma_predict))
+        print("Mean absolute error of linear model: %.2f" % mean_absolute_error(y, y_predict))
+        print("Mean absolute error of PolyNomial model: %.2f" % mean_absolute_error(y, y_poly_predict))
+        # print("Mean absolute error of SVM model: %.2f" % mean_absolute_error(y, y_svr_predict))
+        # print("Mean absolute error of MLP model: %.2f" % mean_absolute_error(y, y_mlp_predict))
+        print("Mean absolute error of AR model: %.2f" % mean_absolute_error(y[ar_order:], y_ar_predict))
+        print("Mean absolute error of ARMA model: %.2f" % mean_absolute_error(y, y_arma_predict))
 
 
     def getNewUserNumber(self, timeStep, dow):

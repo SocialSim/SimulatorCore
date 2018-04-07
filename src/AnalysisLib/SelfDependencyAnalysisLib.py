@@ -46,6 +46,7 @@ class SelfDependencyAnalysisLib(ClusIndependentAnalysisLib):
         self.initUserObjectLastActionType()
 
         # Find the user dependencies.
+        print("User self dependency pass...")
         self.userSelfDependencyPass()
 
     def initUserSelfDependency(self):
@@ -79,7 +80,6 @@ class SelfDependencyAnalysisLib(ClusIndependentAnalysisLib):
         Extract the pairwise dependencies between different types on the same repo by same user.
         :return:
         '''
-        print("User self dependency pass...")
 
         with open(self.fileName, "r") as file:
             for line in file:

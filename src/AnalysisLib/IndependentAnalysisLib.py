@@ -25,7 +25,7 @@ class IndependentAnalysisLib(object):
             IndependentAnalysisLib()
         return IndependentAnalysisLib._instance
 
-    def __init__(self , fileName = None):
+    def __init__(self, fileName = None):
         if IndependentAnalysisLib._instance is not None:
             raise Exception("IndependentAnalysisLib class is a singleton!")
         else:
@@ -68,10 +68,15 @@ class IndependentAnalysisLib(object):
         self.regularUserCount = 0
         self.regularTotalActionCount = 0
 
-        # Statistics for active users
+        # Statistics for active users.
         self.activeUserIds = []
         self.activeUserCount = 0
         self.activeTotalActionCount = 0
+
+        # Statistics for popular objects.
+        self.popularObjectIds = []
+        self.popularObjectCount = 0
+        self.popularObjectActionCount = 0
 
         # In the first pass, we will get the general distribution and user activity level.
         self.firstPass()
@@ -128,6 +133,12 @@ class IndependentAnalysisLib(object):
                 self.regularUserCount += 1
                 self.regularUserIds.append(userId)
                 self.regularTotalActionCount += self.userIds[userId]
+
+        for objectId in self.objectIds:
+            if self.isPopularObject(objectId):
+                self.popularObjectCount += 1
+                self.popularObjectIds.append(objectId)
+                self.popularObjectActionCount += self.objectIds[objectId]
 
         # Extract the general hourlyActionRate and typeDistribution
         self.summarizeGeneralDistribtions()
@@ -306,6 +317,14 @@ class IndependentAnalysisLib(object):
         :return:
         '''
         return self.userIds[userId] < INACTIVE_THRESHOLD * ANALYSIS_LENGTH
+
+    def isPopularObject(self, objectId):
+        '''
+        Judge is the repo is an active repo.
+        :param repoId:
+        :return:
+        '''
+        return self.objectIds[objectId] > POPULAR_THRESHOLD
 
     def getUserIds(self):
         return self.userIds

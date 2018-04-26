@@ -6,7 +6,7 @@ class Agent(object):
         pass
 
     def build(self):
-        '''Query AnalysisLib to get model attributes.'''
+        '''Query StatProxy to get model attributes.'''
         pass
 
     def step(self, currentTime, timeStep):
@@ -26,3 +26,11 @@ class Agent(object):
         :return: the next event the user generates in the nearest future.
         '''
         pass
+
+    def getID(self):
+        '''
+        The getID() function is used by evaluation engine.
+
+        :return: the id of this agent
+        '''
+        return self.id

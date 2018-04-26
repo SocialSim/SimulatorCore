@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sh ${SOCIALSIMPATH}/script/lint.sh
+echo "Finish lintering"

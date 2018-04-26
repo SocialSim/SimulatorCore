@@ -1,6 +1,6 @@
 import random
 
-from AnalysisLib.AnalysisLib import AnalysisLib
+from StatProxy.StatProxy import StatProxy
 from BehaviorModel.SimpleBehaviorModel import SimpleBehaviorModel
 from Agent.Agent import Agent
 
@@ -10,7 +10,7 @@ class SimpleUserAgent(Agent):
     A simple Agent model for GitHub users. The user generates actions according to
     (i) the user's hourly action rate and
     (ii) the user's preference over the repos she is working on
-    both of which were computed from the database using AnalysisLib.
+    both of which were computed from the database using StatProxy.
     '''
 
     def __init__(self, id):
@@ -20,12 +20,12 @@ class SimpleUserAgent(Agent):
         self.build()
 
     def build(self):
-        '''Query AnalysisLib to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
+        '''Query StatProxy to get an ObjectPreference instance and a list of HourlyActionRate instances.'''
         
-        analysislib = AnalysisLib.getInstance()
-        self.hourlyActionRates = analysislib.getUserHourlyActionRate(
+        statProxy = StatProxy.getInstance(agentType="simple")
+        self.hourlyActionRates = statProxy.getUserHourlyActionRate(
             self.id)
-        self.objectPreference = analysislib.getUserObjectPreference(
+        self.objectPreference = statProxy.getUserObjectPreference(
             self.id)
 
     def step(self, currentTime, unitTime):

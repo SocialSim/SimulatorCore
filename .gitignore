@@ -41,3 +41,17 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# private
+SocialSimEvaluationEngine
+*.result
+
+# statistics
+/statistics
+*.json
+
+# rawdata
+/data
+/evaluate
+/output
+/plots

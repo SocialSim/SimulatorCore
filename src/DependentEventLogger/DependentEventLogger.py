@@ -24,6 +24,14 @@ class DependentEventLogger(object):
         by a particular agent at that timestamp
 
     '''
+    _instance = None
+
+    @staticmethod
+    def getInstance(logDepth = 10, startTime = 0, unitTime = 1):
+        """ Static access method. """
+        if DependentEventLogger._instance is None:
+            DependentEventLogger(logDepth, startTime, unitTime)
+        return DependentEventLogger._instance
 
     def __init__(self, logDepth = 10, startTime = 0, unitTime = 1):
         ''' initialize DependencyLogger with its logDepth and startTime
@@ -38,6 +46,11 @@ class DependentEventLogger(object):
             startTime(int): parameter to intialize startTime
 
         '''
+        if DependentEventLogger._instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            DependentEventLogger._instance = self
+
         self.logDepth = logDepth
         self.currTime = startTime - 1
         self.unitTime = unitTime
@@ -134,7 +147,7 @@ class DependentEventLogger(object):
 
 
 if __name__ == "__main__":
-    dl = DependencyLogger(10)
+    dl = DependentEventLogger(10)
     eventLogs = list()
     eventLogs.append([12, "PushEvent", -2])
     eventLogs.append([3, "PullEvent", -1])

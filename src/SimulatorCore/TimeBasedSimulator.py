@@ -1,6 +1,7 @@
 import random
-import numpy as np
-from DependentEventLooger.DependentEventLogger import DependentEventLogger
+from common.const import *
+from DependentEventLogger.DependentEventLogger import DependentEventLogger
+from common.event import Event
 
 
 class TimeBasedSimulator():
@@ -11,33 +12,79 @@ class TimeBasedSimulator():
     Time unit: hour
     '''
 
-    def __init__(self, userAgents, objectAgents, startTime, endTime, unitTime):
+    def __init__(self, userAgents, objectAgents, temporalPreference, startTime, endTime, unitTime):
         self.userAgents = userAgents
         self.objectAgents = objectAgents
+        self.temporalPreference = temporalPreference
         self.currentTime = startTime
         self.startTime = startTime
         self.endTime = endTime
         self.unitTime = unitTime
         self.eventHistory = []
-
-        self.dependencyLogger = DependentEventLogger(10, self.startTime, self.unitTime)
+        self.runWithTemporalPreference = False # Set True to enable temporal preference agent clustering
+        self.dependentEventLogger = DependentEventLogger.getInstance(100, self.startTime, self.unitTime)
 
     def run(self):
-        for currentTime in np.arange(self.startTime, self.endTime,
-                                     self.unitTime):
-            self.step(currentTime)
+        if (self.runWithTemporalPreference):
+            print("NOTE: Running with temporal preference enabled")
 
-    def step(self, currentTime):
-        random.shuffle(self.userAgents)
-        self.dependencyLogger.step()
+        while self.currentTime < self.endTime:
+            print("Timestemp:", self.currentTime)
+            if (self.runWithTemporalPreference):
+                self.stepWithTemporalPreference()
+            else:
+                self.step()
+            self.currentTime += self.unitTime
+
+    def stepWithTemporalPreference(self):
+        self.dependentEventLogger.step()
+
+        userTempDist = self.temporalPreference[self.currentTime]
+        for i in userTempDist:
+            agent = self.userAgents[i]
+            events = agent.step(self.currentTime, self.unitTime)
+            self.logEvents(events)
+            self.eventHistory += events
+
+    def step(self):
+        self.dependentEventLogger.step()
 
         for agent in self.userAgents:
-            events = agent.step(currentTime, self.unitTime)
+            events = agent.step(self.currentTime, self.unitTime)
+            self.logEvents(events)
             self.eventHistory += events
+
+    def logEvents(self, events):
+        for event in events:
+            userId = event.getUserID()
+            eventType = event.getEventType()
+            timeStamp = event.getTimestamp()
+            self.dependentEventLogger.logUserEventAtTime(userID = userId,
+                    eventType = eventType,
+                    timestamp = timeStamp)
 
     def showLog(self):
         for event in self.eventHistory:
-            print(event)
+            print(event.show())
+
+    def saveLog(self):
+        fname = "text.txt"
+        if (self.runWithTemporalPreference):
+            fname = "temp_pref.txt"
+        else:
+            fname = "no_temp_pref.txt"
+
+        f = open(LOG_OUTPUT + fname, "w")
+        for event in self.eventHistory: 
+            f.write(event.eventLog())
+        f.close()
 
     def getCurrentTime(self):
         return self.currentTime
+
+    def getAllUserIDs(self):
+        ids = list()
+        for agent in self.userAgents:
+            ids.append(agent.getID())
+        return ids
+        
